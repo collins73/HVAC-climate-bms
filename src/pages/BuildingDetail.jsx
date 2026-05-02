@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Building2, Layers, AlertTriangle, Plus, ChevronLeft, Thermometer, Pencil, Map } from 'lucide-react';
+import { Building2, Layers, AlertTriangle, Plus, ChevronLeft, Thermometer, Pencil, Map, Calculator } from 'lucide-react';
 import BlueprintPinEditor from '@/components/buildings/BlueprintPinEditor';
+import LoadEstimator from '@/components/buildings/LoadEstimator';
 import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/shared/PageHeader';
 import StatusBadge from '@/components/shared/StatusBadge';
@@ -19,6 +20,7 @@ export default function BuildingDetail() {
   const [zoneModal, setZoneModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [buildings, setBuildings] = useState([]);
+  const [tab, setTab] = useState('zones'); // zones | blueprints | loads
 
   const load = async () => {
     const [b, allBuildings, z, a, r] = await Promise.all([
@@ -99,8 +101,25 @@ export default function BuildingDetail() {
         </div>
       </div>
 
+      {/* Tab nav */}
+      <div className="flex gap-1 bg-card border border-border rounded-xl p-1 w-fit">
+        {[
+          { id: 'zones', label: 'Zones', icon: Layers },
+          { id: 'blueprints', label: 'Blueprints', icon: Map },
+          { id: 'loads', label: 'Load Estimator', icon: Calculator },
+        ].map(t => {
+          const Icon = t.icon;
+          return (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === t.id ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+              <Icon className="w-3.5 h-3.5" />{t.label}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Zones by Floor */}
-      {floors.length === 0 ? (
+      {tab === 'zones' && floors.length === 0 ? (
         <div className="bg-card border border-border rounded-xl p-10 text-center text-muted-foreground">
           <Layers className="w-10 h-10 mx-auto mb-3 opacity-30" />
           <p>No zones added yet</p>
@@ -108,7 +127,7 @@ export default function BuildingDetail() {
             <Plus className="w-4 h-4" /> Add First Zone
           </Button>
         </div>
-      ) : floors.map(floor => (
+      ) : tab === 'zones' && floors.map(floor => (
         <div key={floor}>
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             {Number(floor) === 0 ? 'Ground Floor / Unassigned' : `Floor ${floor}`}
@@ -146,12 +165,14 @@ export default function BuildingDetail() {
       ))}
 
       {/* Blueprints */}
-      <div>
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-          <Map className="w-4 h-4" /> Blueprints & Floor Plans
-        </h3>
+      {tab === 'blueprints' && (
         <BlueprintPinEditor building={building} zones={zones} blueprints={building.blueprints} />
-      </div>
+      )}
+
+      {/* Load Estimator */}
+      {tab === 'loads' && (
+        <LoadEstimator building={building} />
+      )}
 
       <ZoneModal open={zoneModal} onClose={() => setZoneModal(false)} buildings={buildings} defaultBuildingId={id} onSaved={load} />
       <BuildingModal open={editModal} onClose={() => setEditModal(false)} building={building} onSaved={load} />

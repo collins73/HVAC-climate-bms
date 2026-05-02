@@ -1,0 +1,146 @@
+{
+  "name": "BuildingLoad",
+  "type": "object",
+  "properties": {
+    "building_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name/label for this estimate"
+    },
+    "total_sqft": {
+      "type": "number"
+    },
+    "floors": {
+      "type": "number"
+    },
+    "ceiling_height_ft": {
+      "type": "number",
+      "default": 9
+    },
+    "climate_zone": {
+      "type": "string",
+      "enum": [
+        "1A",
+        "2A",
+        "2B",
+        "3A",
+        "3B",
+        "3C",
+        "4A",
+        "4B",
+        "4C",
+        "5A",
+        "5B",
+        "6A",
+        "6B",
+        "7"
+      ],
+      "default": "3A"
+    },
+    "wall_insulation_rvalue": {
+      "type": "number",
+      "default": 13,
+      "description": "R-value of wall insulation"
+    },
+    "roof_insulation_rvalue": {
+      "type": "number",
+      "default": 30,
+      "description": "R-value of roof/ceiling insulation"
+    },
+    "window_u_factor": {
+      "type": "number",
+      "default": 0.35,
+      "description": "U-factor of windows (lower = better insulated)"
+    },
+    "window_shgc": {
+      "type": "number",
+      "default": 0.25,
+      "description": "Solar Heat Gain Coefficient (0\u20131)"
+    },
+    "window_to_wall_ratio": {
+      "type": "number",
+      "default": 0.3,
+      "description": "Fraction of wall area that is glass (0\u20131)"
+    },
+    "primary_solar_exposure": {
+      "type": "string",
+      "enum": [
+        "North",
+        "Northeast",
+        "East",
+        "Southeast",
+        "South",
+        "Southwest",
+        "West",
+        "Northwest"
+      ],
+      "default": "South",
+      "description": "Cardinal direction of largest window/facade facing the sun"
+    },
+    "occupant_density": {
+      "type": "number",
+      "default": 150,
+      "description": "Sq ft per person"
+    },
+    "lighting_power_density": {
+      "type": "number",
+      "default": 1.0,
+      "description": "Watts per sq ft"
+    },
+    "equipment_power_density": {
+      "type": "number",
+      "default": 1.5,
+      "description": "Watts per sq ft (plug loads)"
+    },
+    "infiltration_rate": {
+      "type": "number",
+      "default": 0.35,
+      "description": "Air changes per hour (ACH)"
+    },
+    "ventilation_cfm_per_person": {
+      "type": "number",
+      "default": 20
+    },
+    "design_outdoor_temp_cooling": {
+      "type": "number",
+      "default": 95,
+      "description": "Design outdoor dry-bulb temp for cooling (\u00b0F)"
+    },
+    "design_outdoor_temp_heating": {
+      "type": "number",
+      "default": 10,
+      "description": "Design outdoor dry-bulb temp for heating (\u00b0F)"
+    },
+    "indoor_setpoint_cooling": {
+      "type": "number",
+      "default": 74
+    },
+    "indoor_setpoint_heating": {
+      "type": "number",
+      "default": 68
+    },
+    "cooling_load_tons": {
+      "type": "number",
+      "description": "Estimated peak cooling load in tons"
+    },
+    "heating_load_kbtu": {
+      "type": "number",
+      "description": "Estimated peak heating load in kBTU/hr"
+    },
+    "cooling_load_breakdown": {
+      "type": "object",
+      "description": "JSON breakdown of cooling load by source"
+    },
+    "heating_load_breakdown": {
+      "type": "object",
+      "description": "JSON breakdown of heating load by source"
+    }
+  },
+  "required": [
+    "building_id",
+    "name",
+    "total_sqft"
+  ]
+}
