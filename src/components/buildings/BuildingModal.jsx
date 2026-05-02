@@ -148,7 +148,7 @@ export default function BuildingModal({ open, onClose, building, onSaved }) {
           <div className="col-span-2">
             <Label className="text-muted-foreground text-xs">Blueprints / Floor Plans</Label>
             <label className={`mt-1 flex flex-col items-center justify-center w-full h-20 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${uploading ? 'border-primary/40 bg-primary/5' : 'border-border hover:border-primary/40 hover:bg-primary/5'}`}>
-              <input type="file" className="hidden" multiple accept="image/*,.pdf" onChange={handleBlueprintUpload} disabled={uploading} />
+              <input type="file" className="hidden" multiple accept="image/*,.pdf,.dwg,.dxf,.dwf,.svg" onChange={handleBlueprintUpload} disabled={uploading} />
               {uploading ? (
                 <div className="flex items-center gap-2 text-primary text-sm">
                   <Loader2 className="w-4 h-4 animate-spin" /> Uploading…
@@ -156,7 +156,7 @@ export default function BuildingModal({ open, onClose, building, onSaved }) {
               ) : (
                 <div className="flex flex-col items-center gap-1 text-muted-foreground">
                   <Upload className="w-5 h-5" />
-                  <span className="text-xs">Click to upload images or PDFs</span>
+                  <span className="text-xs">Click to upload images, PDFs, or CAD files (.dwg, .dxf)</span>
                 </div>
               )}
             </label>
