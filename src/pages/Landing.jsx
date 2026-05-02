@@ -200,32 +200,25 @@ export default function Landing() {
     setDemoActive(next);
   };
 
-  // Auto-advance logic
-  useEffect(() => {
-    if (!demoPlaying) { clearInterval(intervalRef.current); return; }
+  // Auto-advance logic — single source of truth via ref
+  const startInterval = () => {
+    clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
-      setDemoActive(prev => {
-        const next = (prev + 1) % demoSteps.length;
-        setDemoDirection(1);
-        return next;
-      });
+      setDemoDirection(1);
+      setDemoActive(prev => (prev + 1) % demoSteps.length);
     }, DEMO_INTERVAL);
+  };
+
+  useEffect(() => {
+    if (demoPlaying) startInterval();
+    else clearInterval(intervalRef.current);
     return () => clearInterval(intervalRef.current);
   }, [demoPlaying]);
 
-  // Pause on manual navigation, restart timer
+  // Manual navigation resets the interval so the timer restarts from the new step
   const handleNavigate = (next) => {
     navigateDemo(next);
-    // restart the interval when user manually navigates
-    clearInterval(intervalRef.current);
-    if (demoPlaying) {
-      intervalRef.current = setInterval(() => {
-        setDemoActive(prev => {
-          setDemoDirection(1);
-          return (prev + 1) % demoSteps.length;
-        });
-      }, DEMO_INTERVAL);
-    }
+    if (demoPlaying) startInterval();
   };
 
   return (

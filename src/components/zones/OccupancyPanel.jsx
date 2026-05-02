@@ -29,18 +29,20 @@ export default function OccupancyPanel({ zone, onZoneUpdated }) {
     ? (zone.unoccupied_setpoint_heating ?? 62)
     : null;
 
-  const updateZone = async (patch) => {
+  const updateZone = async (patch, isOccupancyChange = false) => {
     setSaving(true);
-    const updated = await base44.entities.Zone.update(zone.id, {
-      ...patch,
-      occupancy_last_updated: new Date().toISOString(),
-    });
+    const payload = { ...patch };
+    if (isOccupancyChange) payload.occupancy_last_updated = new Date().toISOString();
+    const updated = await base44.entities.Zone.update(zone.id, payload);
     setSaving(false);
     onZoneUpdated(updated);
   };
 
   const setOccupancy = (status) => {
-    updateZone({ occupancy_status: status, occupancy_count: status === 'Unoccupied' ? 0 : zone.occupancy_count });
+    updateZone(
+      { occupancy_status: status, occupancy_count: status === 'Unoccupied' ? 0 : zone.occupancy_count },
+      true
+    );
   };
 
   return (
@@ -101,7 +103,7 @@ export default function OccupancyPanel({ zone, onZoneUpdated }) {
               </Label>
               <Slider
                 value={[zone.occupancy_count ?? 0]}
-                onValueChange={([v]) => updateZone({ occupancy_status: 'Occupied', occupancy_count: v })}
+                onValueChange={([v]) => updateZone({ occupancy_status: 'Occupied', occupancy_count: v }, true)}
                 min={0} max={50} step={1}
               />
               <div className="flex justify-between text-xs text-muted-foreground mt-1"><span>0</span><span>50</span></div>
