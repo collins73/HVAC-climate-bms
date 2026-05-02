@@ -1,0 +1,48 @@
+{
+  "name": "SensorPin",
+  "type": "object",
+  "properties": {
+    "building_id": {
+      "type": "string"
+    },
+    "blueprint_index": {
+      "type": "number"
+    },
+    "zone_id": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    },
+    "sensor_type": {
+      "type": "string",
+      "enum": [
+        "Temperature",
+        "Humidity",
+        "CO2",
+        "Thermostat",
+        "Air Quality",
+        "Other"
+      ],
+      "default": "Temperature"
+    },
+    "x_pct": {
+      "type": "number",
+      "description": "X position as percentage of image width"
+    },
+    "y_pct": {
+      "type": "number",
+      "description": "Y position as percentage of image height"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "building_id",
+    "blueprint_index",
+    "label",
+    "x_pct",
+    "y_pct"
+  ]
+}
