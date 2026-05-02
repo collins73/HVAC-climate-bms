@@ -1,8 +1,9 @@
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Building2, LayoutDashboard, Layers, AlertTriangle, Activity, ChevronRight } from 'lucide-react';
+import { Building2, LayoutDashboard, Layers, AlertTriangle, Activity, ChevronRight, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
+  { path: '/home', label: 'Home', icon: Home },
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/buildings', label: 'Buildings', icon: Building2 },
   { path: '/zones', label: 'Zones', icon: Layers },

@@ -35,6 +35,10 @@
     "notes": {
       "type": "string"
     },
+    "cover_image_url": {
+      "type": "string",
+      "description": "Main facility photo or thumbnail"
+    },
     "blueprints": {
       "type": "array",
       "items": {

@@ -6,9 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { base44 } from '@/api/base44Client';
-import { Upload, X, FileImage, Loader2 } from 'lucide-react';
+import { Upload, X, FileImage, Loader2, ImagePlus } from 'lucide-react';
 
-const empty = { name: '', address: '', city: '', state: '', zip: '', floors: '', total_sqft: '', status: 'Active', notes: '', blueprints: [] };
+const empty = { name: '', address: '', city: '', state: '', zip: '', floors: '', total_sqft: '', status: 'Active', notes: '', blueprints: [], cover_image_url: '' };
 
 export default function BuildingModal({ open, onClose, building, onSaved }) {
   const [form, setForm] = useState(empty);
@@ -111,6 +111,37 @@ export default function BuildingModal({ open, onClose, building, onSaved }) {
           <div className="col-span-2">
             <Label className="text-muted-foreground text-xs">Notes</Label>
             <Textarea value={form.notes} onChange={e => set('notes', e.target.value)} className="mt-1 bg-input border-border text-foreground resize-none" rows={2} />
+          </div>
+
+          {/* Cover Image */}
+          <div className="col-span-2">
+            <Label className="text-muted-foreground text-xs">Facility Cover Image</Label>
+            <div className="mt-1 flex items-center gap-3">
+              {form.cover_image_url ? (
+                <div className="relative w-20 h-14 rounded-lg overflow-hidden border border-border flex-shrink-0">
+                  <img src={form.cover_image_url} alt="cover" className="w-full h-full object-cover" />
+                  <button onClick={() => set('cover_image_url', '')} className="absolute top-0.5 right-0.5 bg-black/60 rounded p-0.5 text-white hover:bg-black/80">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-20 h-14 rounded-lg border border-dashed border-border bg-muted/30 flex items-center justify-center flex-shrink-0">
+                  <ImagePlus className="w-5 h-5 text-muted-foreground/40" />
+                </div>
+              )}
+              <label className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-xs ${uploading ? 'opacity-50 pointer-events-none' : 'border-border hover:border-primary/40 hover:bg-primary/5 text-muted-foreground'}`}>
+                <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setUploading(true);
+                  const { file_url } = await base44.integrations.Core.UploadFile({ file });
+                  set('cover_image_url', file_url);
+                  setUploading(false);
+                  e.target.value = '';
+                }} />
+                {uploading ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading…</> : <><Upload className="w-3.5 h-3.5" /> Upload Image</>}
+              </label>
+            </div>
           </div>
 
           {/* Blueprints */}

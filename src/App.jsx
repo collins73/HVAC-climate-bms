@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Layout from '@/components/Layout';
 import Landing from '@/pages/Landing';
+import Home from '@/pages/Home';
 import Demo from '@/pages/Demo';
 import Dashboard from '@/pages/Dashboard';
 import Buildings from '@/pages/Buildings';
@@ -42,6 +43,7 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* Public pages (no sidebar layout) */}
       <Route path="/" element={<Landing />} />
+      <Route path="/home" element={<Home />} />
       <Route path="/demo" element={<Demo />} />
 
       {/* App pages (with sidebar/bottom nav layout) */}
