@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, Building2, Thermometer, AlertTriangle, Layers, Wifi, Shield, Smartphone, ChevronRight, ChevronLeft, CheckCircle2, Zap, BarChart3, Clock, Globe, Play, LayoutDashboard, Sliders } from 'lucide-react';
+import { Activity, Building2, Thermometer, AlertTriangle, Layers, Wifi, Shield, Smartphone, ChevronRight, ChevronLeft, CheckCircle2, Zap, BarChart3, Clock, Globe, Play, Pause, LayoutDashboard, Sliders } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -185,15 +185,47 @@ const demoSteps = [
   },
 ];
 
+const DEMO_INTERVAL = 4000;
+
 export default function Landing() {
   const [demoActive, setDemoActive] = useState(0);
   const [demoDirection, setDemoDirection] = useState(1);
+  const [demoPlaying, setDemoPlaying] = useState(true);
+  const intervalRef = useRef(null);
   const demoStep = demoSteps[demoActive];
   const DemoIcon = demoStep.icon;
 
   const navigateDemo = (next) => {
     setDemoDirection(next > demoActive ? 1 : -1);
     setDemoActive(next);
+  };
+
+  // Auto-advance logic
+  useEffect(() => {
+    if (!demoPlaying) { clearInterval(intervalRef.current); return; }
+    intervalRef.current = setInterval(() => {
+      setDemoActive(prev => {
+        const next = (prev + 1) % demoSteps.length;
+        setDemoDirection(1);
+        return next;
+      });
+    }, DEMO_INTERVAL);
+    return () => clearInterval(intervalRef.current);
+  }, [demoPlaying]);
+
+  // Pause on manual navigation, restart timer
+  const handleNavigate = (next) => {
+    navigateDemo(next);
+    // restart the interval when user manually navigates
+    clearInterval(intervalRef.current);
+    if (demoPlaying) {
+      intervalRef.current = setInterval(() => {
+        setDemoActive(prev => {
+          setDemoDirection(1);
+          return (prev + 1) % demoSteps.length;
+        });
+      }, DEMO_INTERVAL);
+    }
   };
 
   return (
@@ -390,6 +422,21 @@ export default function Landing() {
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">See It in Action</h2>
           <p className="text-muted-foreground">Walk through the 5 core features of the platform.</p>
+          {/* Progress bar */}
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <button
+              onClick={() => setDemoPlaying(p => !p)}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors border border-border rounded-full px-3 py-1"
+            >
+              {demoPlaying ? <><Pause className="w-3 h-3" /> Pause</> : <><Play className="w-3 h-3" /> Play</>}
+            </button>
+            <div className="flex gap-1.5 items-center">
+              {demoSteps.map((_, i) => (
+                <button key={i} onClick={() => handleNavigate(i)}
+                  className={cn("h-1.5 rounded-full transition-all duration-300", i === demoActive ? 'bg-primary w-8' : 'w-3 bg-border hover:bg-muted-foreground')} />
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Step Pills */}
@@ -399,7 +446,7 @@ export default function Landing() {
             return (
               <motion.button
                 key={s.id}
-                onClick={() => navigateDemo(i)}
+                onClick={() => handleNavigate(i)}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
                 className={cn(
@@ -446,23 +493,13 @@ export default function Landing() {
                 ))}
               </ul>
               <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
-                <button onClick={() => navigateDemo(Math.max(0, demoActive - 1))} disabled={demoActive === 0} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors">
+                <button onClick={() => handleNavigate((demoActive - 1 + demoSteps.length) % demoSteps.length)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                   <ChevronLeft className="w-4 h-4" /> Previous
                 </button>
-                <div className="flex gap-1.5">
-                  {demoSteps.map((_, i) => (
-                    <button key={i} onClick={() => navigateDemo(i)} className={cn("h-2 rounded-full transition-all duration-300", i === demoActive ? 'bg-primary w-5' : 'w-2 bg-border hover:bg-muted-foreground')} />
-                  ))}
-                </div>
-                {demoActive < demoSteps.length - 1 ? (
-                  <button onClick={() => navigateDemo(demoActive + 1)} className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors">
-                    Next <ChevronRight className="w-4 h-4" />
-                  </button>
-                ) : (
-                  <Link to="/dashboard" className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium">
-                    Launch App <ChevronRight className="w-4 h-4" />
-                  </Link>
-                )}
+                <span className="text-xs text-muted-foreground">{demoActive + 1} / {demoSteps.length}</span>
+                <button onClick={() => handleNavigate((demoActive + 1) % demoSteps.length)} className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors">
+                  Next <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
             </motion.div>
           </AnimatePresence>
