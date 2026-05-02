@@ -6,7 +6,8 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Layout from '@/components/Layout';
-// Add page imports here
+import Landing from '@/pages/Landing';
+import Demo from '@/pages/Demo';
 import Dashboard from '@/pages/Dashboard';
 import Buildings from '@/pages/Buildings';
 import BuildingDetail from '@/pages/BuildingDetail';
@@ -39,14 +40,20 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
+      {/* Public pages (no sidebar layout) */}
+      <Route path="/" element={<Landing />} />
+      <Route path="/demo" element={<Demo />} />
+
+      {/* App pages (with sidebar/bottom nav layout) */}
       <Route element={<Layout />}>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/buildings" element={<Buildings />} />
         <Route path="/buildings/:id" element={<BuildingDetail />} />
         <Route path="/zones" element={<Zones />} />
         <Route path="/zones/:id" element={<ZoneControl />} />
         <Route path="/alerts" element={<Alerts />} />
       </Route>
+
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
