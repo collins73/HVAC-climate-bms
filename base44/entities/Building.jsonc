@@ -34,6 +34,26 @@
     },
     "notes": {
       "type": "string"
+    },
+    "blueprints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "floor": {
+            "type": "number"
+          },
+          "uploaded_at": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "required": [

@@ -72,17 +72,17 @@ export default function Landing() {
             </Link>
           </div>
 
-          {/* Live Stats Bar */}
+          {/* Feature highlights */}
           <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
             {[
-              { label: 'Buildings Online', val: '3', color: 'text-cyan-400' },
-              { label: 'Zones Monitored', val: '8', color: 'text-blue-400' },
-              { label: 'Avg Temperature', val: '72°F', color: 'text-amber-400' },
-              { label: 'Open Alerts', val: '3', color: 'text-red-400' },
+              { label: 'Multi-Building', icon: '🏢', color: 'text-cyan-400' },
+              { label: 'Zone Control', icon: '🌡️', color: 'text-blue-400' },
+              { label: 'Live Monitoring', icon: '📡', color: 'text-amber-400' },
+              { label: 'Smart Alerts', icon: '🔔', color: 'text-red-400' },
             ].map(s => (
               <div key={s.label} className="bg-card border border-border rounded-xl p-4">
-                <div className={`text-2xl font-bold font-mono ${s.color}`}>{s.val}</div>
-                <div className="text-xs text-muted-foreground mt-1">{s.label}</div>
+                <div className={`text-2xl mb-1`}>{s.icon}</div>
+                <div className="text-xs text-muted-foreground mt-1 font-medium">{s.label}</div>
               </div>
             ))}
           </div>
@@ -128,31 +128,31 @@ export default function Landing() {
                 </div>
                 <div className="p-3 space-y-2">
                   <div className="bg-primary/10 border border-primary/20 rounded-xl p-3">
-                    <div className="text-xs text-primary font-semibold mb-1">⚠ CRITICAL ALERT</div>
-                    <div className="text-xs text-foreground">Warehouse North: 83°F</div>
+                    <div className="text-xs text-primary font-semibold mb-1">⚠ HVAC ALERT</div>
+                    <div className="text-xs text-foreground">Zone temperature threshold exceeded</div>
                   </div>
                   <div className="bg-card border border-border rounded-xl p-3">
-                    <div className="text-xs text-muted-foreground mb-2">HQ Tower A · Floor 3</div>
+                    <div className="text-xs text-muted-foreground mb-2">Your Building · Floor 3</div>
                     <div className="flex justify-between items-center">
                       <div className="text-center">
-                        <div className="text-lg font-bold font-mono text-cyan-400">74°</div>
+                        <div className="text-lg font-bold font-mono text-cyan-400">--°</div>
                         <div className="text-xs text-muted-foreground">Temp</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-bold font-mono text-blue-400">52%</div>
+                        <div className="text-lg font-bold font-mono text-blue-400">--%</div>
                         <div className="text-xs text-muted-foreground">Humid</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-bold font-mono text-purple-400">890</div>
+                        <div className="text-lg font-bold font-mono text-purple-400">---</div>
                         <div className="text-xs text-muted-foreground">CO₂</div>
                       </div>
                     </div>
                   </div>
                   <div className="bg-card border border-border rounded-xl p-3">
-                    <div className="text-xs text-muted-foreground mb-1">Server Room · Mode</div>
+                    <div className="text-xs text-muted-foreground mb-1">Zone Control · Mode</div>
                     <div className="flex gap-1">
                       {['Cool','Heat','Auto'].map((m, i) => (
-                        <div key={m} className={`flex-1 py-1 text-xs text-center rounded-lg border ${i === 0 ? 'border-blue-500/40 bg-blue-500/10 text-blue-400' : 'border-border text-muted-foreground'}`}>{m}</div>
+                        <div key={m} className={`flex-1 py-1 text-xs text-center rounded-lg border ${i === 2 ? 'border-cyan-500/40 bg-cyan-500/10 text-cyan-400' : 'border-border text-muted-foreground'}`}>{m}</div>
                       ))}
                     </div>
                   </div>
