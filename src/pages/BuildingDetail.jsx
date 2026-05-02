@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Building2, Layers, AlertTriangle, Plus, ChevronLeft, Thermometer, Pencil } from 'lucide-react';
+import { Building2, Layers, AlertTriangle, Plus, ChevronLeft, Thermometer, Pencil, Map } from 'lucide-react';
+import BlueprintViewer from '@/components/buildings/BlueprintViewer';
 import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/shared/PageHeader';
 import StatusBadge from '@/components/shared/StatusBadge';
@@ -143,6 +144,14 @@ export default function BuildingDetail() {
           </div>
         </div>
       ))}
+
+      {/* Blueprints */}
+      <div>
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+          <Map className="w-4 h-4" /> Blueprints & Floor Plans
+        </h3>
+        <BlueprintViewer blueprints={building.blueprints} />
+      </div>
 
       <ZoneModal open={zoneModal} onClose={() => setZoneModal(false)} buildings={buildings} defaultBuildingId={id} onSaved={load} />
       <BuildingModal open={editModal} onClose={() => setEditModal(false)} building={building} onSaved={load} />

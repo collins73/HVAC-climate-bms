@@ -6,18 +6,50 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { base44 } from '@/api/base44Client';
+import { Upload, X, FileImage, Loader2 } from 'lucide-react';
 
-const empty = { name: '', address: '', city: '', state: '', zip: '', floors: '', total_sqft: '', status: 'Active', notes: '' };
+const empty = { name: '', address: '', city: '', state: '', zip: '', floors: '', total_sqft: '', status: 'Active', notes: '', blueprints: [] };
 
 export default function BuildingModal({ open, onClose, building, onSaved }) {
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    setForm(building ? { ...building } : empty);
+    setForm(building ? { ...building, blueprints: building.blueprints || [] } : empty);
   }, [building, open]);
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleBlueprintUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    setUploading(true);
+    for (const file of files) {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const blueprint = {
+        name: file.name.replace(/\.[^.]+$/, ''),
+        url: file_url,
+        floor: null,
+        uploaded_at: new Date().toISOString(),
+      };
+      setForm(f => ({ ...f, blueprints: [...(f.blueprints || []), blueprint] }));
+    }
+    setUploading(false);
+    e.target.value = '';
+  };
+
+  const removeBlueprint = (idx) => {
+    setForm(f => ({ ...f, blueprints: f.blueprints.filter((_, i) => i !== idx) }));
+  };
+
+  const updateBlueprintName = (idx, name) => {
+    setForm(f => ({ ...f, blueprints: f.blueprints.map((b, i) => i === idx ? { ...b, name } : b) }));
+  };
+
+  const updateBlueprintFloor = (idx, floor) => {
+    setForm(f => ({ ...f, blueprints: f.blueprints.map((b, i) => i === idx ? { ...b, floor: floor === '' ? null : Number(floor) } : b) }));
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -34,7 +66,7 @@ export default function BuildingModal({ open, onClose, building, onSaved }) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-card border-border max-w-lg">
+      <DialogContent className="bg-card border-border max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-foreground">{building ? 'Edit Building' : 'Add Building'}</DialogTitle>
         </DialogHeader>
@@ -80,10 +112,54 @@ export default function BuildingModal({ open, onClose, building, onSaved }) {
             <Label className="text-muted-foreground text-xs">Notes</Label>
             <Textarea value={form.notes} onChange={e => set('notes', e.target.value)} className="mt-1 bg-input border-border text-foreground resize-none" rows={2} />
           </div>
+
+          {/* Blueprints */}
+          <div className="col-span-2">
+            <Label className="text-muted-foreground text-xs">Blueprints / Floor Plans</Label>
+            <label className={`mt-1 flex flex-col items-center justify-center w-full h-20 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${uploading ? 'border-primary/40 bg-primary/5' : 'border-border hover:border-primary/40 hover:bg-primary/5'}`}>
+              <input type="file" className="hidden" multiple accept="image/*,.pdf" onChange={handleBlueprintUpload} disabled={uploading} />
+              {uploading ? (
+                <div className="flex items-center gap-2 text-primary text-sm">
+                  <Loader2 className="w-4 h-4 animate-spin" /> Uploading…
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-1 text-muted-foreground">
+                  <Upload className="w-5 h-5" />
+                  <span className="text-xs">Click to upload images or PDFs</span>
+                </div>
+              )}
+            </label>
+
+            {form.blueprints?.length > 0 && (
+              <div className="mt-2 space-y-2">
+                {form.blueprints.map((bp, idx) => (
+                  <div key={idx} className="flex items-center gap-2 bg-muted/50 border border-border rounded-lg p-2">
+                    <FileImage className="w-4 h-4 text-primary flex-shrink-0" />
+                    <Input
+                      value={bp.name}
+                      onChange={e => updateBlueprintName(idx, e.target.value)}
+                      className="flex-1 h-7 text-xs bg-input border-border text-foreground"
+                      placeholder="Blueprint name"
+                    />
+                    <Input
+                      type="number"
+                      value={bp.floor ?? ''}
+                      onChange={e => updateBlueprintFloor(idx, e.target.value)}
+                      className="w-16 h-7 text-xs bg-input border-border text-foreground"
+                      placeholder="Floor"
+                    />
+                    <button onClick={() => removeBlueprint(idx)} className="text-muted-foreground hover:text-destructive transition-colors">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose} className="border-border text-muted-foreground hover:text-foreground">Cancel</Button>
-          <Button onClick={handleSave} disabled={saving || !form.name} className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button onClick={handleSave} disabled={saving || uploading || !form.name} className="bg-primary text-primary-foreground hover:bg-primary/90">
             {saving ? 'Saving…' : 'Save Building'}
           </Button>
         </DialogFooter>
