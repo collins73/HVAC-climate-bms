@@ -200,25 +200,29 @@ export default function Landing() {
     setDemoActive(next);
   };
 
-  // Auto-advance logic — single source of truth via ref
-  const startInterval = () => {
-    clearInterval(intervalRef.current);
+  // Auto-advance: runs whenever demoPlaying changes
+  useEffect(() => {
+    if (!demoPlaying) {
+      clearInterval(intervalRef.current);
+      return;
+    }
     intervalRef.current = setInterval(() => {
       setDemoDirection(1);
       setDemoActive(prev => (prev + 1) % demoSteps.length);
     }, DEMO_INTERVAL);
-  };
-
-  useEffect(() => {
-    if (demoPlaying) startInterval();
-    else clearInterval(intervalRef.current);
     return () => clearInterval(intervalRef.current);
   }, [demoPlaying]);
 
-  // Manual navigation resets the interval so the timer restarts from the new step
+  // Manual navigation: restart interval from the new step
   const handleNavigate = (next) => {
     navigateDemo(next);
-    if (demoPlaying) startInterval();
+    if (demoPlaying) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = setInterval(() => {
+        setDemoDirection(1);
+        setDemoActive(prev => (prev + 1) % demoSteps.length);
+      }, DEMO_INTERVAL);
+    }
   };
 
   return (
