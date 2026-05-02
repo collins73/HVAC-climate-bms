@@ -39,6 +39,40 @@
     },
     "notes": {
       "type": "string"
+    },
+    "occupancy_status": {
+      "type": "string",
+      "enum": [
+        "Occupied",
+        "Unoccupied",
+        "Unknown"
+      ],
+      "default": "Unknown",
+      "description": "Current occupancy state of the zone"
+    },
+    "occupancy_count": {
+      "type": "number",
+      "description": "Estimated number of occupants currently in the zone"
+    },
+    "occupancy_last_updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when occupancy was last updated"
+    },
+    "energy_save_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, setpoints are automatically relaxed when unoccupied to save energy"
+    },
+    "unoccupied_setpoint_cooling": {
+      "type": "number",
+      "default": 80,
+      "description": "Cooling setpoint used when zone is unoccupied (\u00b0F)"
+    },
+    "unoccupied_setpoint_heating": {
+      "type": "number",
+      "default": 62,
+      "description": "Heating setpoint used when zone is unoccupied (\u00b0F)"
     }
   },
   "required": [

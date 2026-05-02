@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { ChevronLeft, Thermometer, Wind, Droplets, Plus, Check, AlertTriangle, Calendar, Clock, ToggleLeft, ToggleRight } from 'lucide-react';
+import { ChevronLeft, Thermometer, Wind, Droplets, Plus, Check, AlertTriangle, Calendar, Clock, ToggleLeft, ToggleRight, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import StatusBadge from '@/components/shared/StatusBadge';
 import SensorReadout from '@/components/shared/SensorReadout';
+import OccupancyPanel from '@/components/zones/OccupancyPanel';
 import { cn } from '@/lib/utils';
 
 const MODES = ['Cool', 'Heat', 'Auto', 'Fan Only', 'Off'];
@@ -104,6 +105,11 @@ export default function ZoneControl() {
   const latestReading = readings[0];
   const openAlerts = alerts.filter(a => a.status === 'Open' || a.status === 'Acknowledged');
 
+  // Effective setpoints: use unoccupied values when energy save mode is on and zone is unoccupied
+  const energySaving = zone.energy_save_mode && zone.occupancy_status === 'Unoccupied';
+  const effectiveCooling = energySaving ? (zone.unoccupied_setpoint_cooling ?? 80) : thermostat.setpoint_cooling;
+  const effectiveHeating = energySaving ? (zone.unoccupied_setpoint_heating ?? 62) : thermostat.setpoint_heating;
+
   return (
     <div className="p-6 space-y-6">
       <Link to="/zones" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -164,12 +170,24 @@ export default function ZoneControl() {
           {/* Setpoints */}
           {thermostat.mode !== 'Off' && thermostat.mode !== 'Fan Only' && (
             <div className="bg-card border border-border rounded-xl p-5 space-y-5">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Temperature Setpoints</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Temperature Setpoints</h3>
+                {energySaving && (
+                  <span className="flex items-center gap-1 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-2 py-0.5">
+                    <Zap className="w-3 h-3" /> Unoccupied override active
+                  </span>
+                )}
+              </div>
+              {energySaving && (
+                <div className="text-xs text-muted-foreground bg-muted/40 border border-border rounded-lg px-3 py-2">
+                  Energy save mode is active. Effective setpoints: <span className="text-blue-400 font-mono">{effectiveCooling}°F</span> cool / <span className="text-orange-400 font-mono">{effectiveHeating}°F</span> heat
+                </div>
+              )}
               {(thermostat.mode === 'Cool' || thermostat.mode === 'Auto') && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <Label className="text-sm text-blue-400 font-medium">Cooling Setpoint</Label>
-                    <span className="text-xl font-bold font-mono text-blue-400">{thermostat.setpoint_cooling}°F</span>
+                    <Label className="text-sm text-blue-400 font-medium">Cooling Setpoint {energySaving && <span className="text-xs text-muted-foreground">(overridden)</span>}</Label>
+                    <span className={cn("text-xl font-bold font-mono", energySaving ? 'text-muted-foreground line-through' : 'text-blue-400')}>{thermostat.setpoint_cooling}°F</span>
                   </div>
                   <Slider
                     value={[thermostat.setpoint_cooling]}
@@ -183,8 +201,8 @@ export default function ZoneControl() {
               {(thermostat.mode === 'Heat' || thermostat.mode === 'Auto') && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <Label className="text-sm text-orange-400 font-medium">Heating Setpoint</Label>
-                    <span className="text-xl font-bold font-mono text-orange-400">{thermostat.setpoint_heating}°F</span>
+                    <Label className="text-sm text-orange-400 font-medium">Heating Setpoint {energySaving && <span className="text-xs text-muted-foreground">(overridden)</span>}</Label>
+                    <span className={cn("text-xl font-bold font-mono", energySaving ? 'text-muted-foreground line-through' : 'text-orange-400')}>{thermostat.setpoint_heating}°F</span>
                   </div>
                   <Slider
                     value={[thermostat.setpoint_heating]}
@@ -234,6 +252,9 @@ export default function ZoneControl() {
 
         {/* Right Panel */}
         <div className="space-y-4">
+          {/* Occupancy & Energy Saving */}
+          <OccupancyPanel zone={zone} onZoneUpdated={setZone} />
+
           {/* Active Alerts */}
           {openAlerts.length > 0 && (
             <div className="bg-card border border-red-500/20 rounded-xl overflow-hidden">
