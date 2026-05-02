@@ -7,12 +7,14 @@ import StatusBadge from '@/components/shared/StatusBadge';
 import SensorReadout from '@/components/shared/SensorReadout';
 import PageHeader from '@/components/shared/PageHeader';
 import ZoneTrendChart from '@/components/dashboard/ZoneTrendChart';
+import EnergyMonitor from '@/components/dashboard/EnergyMonitor';
 
 export default function Dashboard() {
   const [buildings, setBuildings] = useState([]);
   const [zones, setZones] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [readings, setReadings] = useState([]);
+  const [thermostatSettings, setThermostatSettings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,11 +23,13 @@ export default function Dashboard() {
       base44.entities.Zone.list(),
       base44.entities.Alert.list(),
       base44.entities.EnvironmentReading.list('-timestamp', 200),
-    ]).then(([b, z, a, r]) => {
+      base44.entities.ThermostatSetting.list(),
+    ]).then(([b, z, a, r, ts]) => {
       setBuildings(b);
       setZones(z);
       setAlerts(a);
       setReadings(r);
+      setThermostatSettings(ts);
       setLoading(false);
     });
   }, []);
@@ -168,6 +172,14 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      {/* Energy Monitor */}
+      <EnergyMonitor
+        zones={zones}
+        thermostatSettings={thermostatSettings}
+        latestByZone={latestByZone}
+        loading={loading}
+      />
+
       {/* Zone Trend Charts */}
       <div>
         <div className="flex items-center justify-between mb-4">
