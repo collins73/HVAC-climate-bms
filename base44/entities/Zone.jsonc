@@ -1,0 +1,48 @@
+{
+  "name": "Zone",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "building_id": {
+      "type": "string"
+    },
+    "floor": {
+      "type": "number"
+    },
+    "zone_type": {
+      "type": "string",
+      "enum": [
+        "Office",
+        "Lobby",
+        "Server Room",
+        "Conference Room",
+        "Warehouse",
+        "Retail",
+        "Residential",
+        "Other"
+      ],
+      "default": "Office"
+    },
+    "sqft": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Active",
+        "Inactive",
+        "Maintenance"
+      ],
+      "default": "Active"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "building_id"
+  ]
+}

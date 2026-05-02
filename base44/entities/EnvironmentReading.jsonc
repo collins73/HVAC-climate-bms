@@ -1,0 +1,44 @@
+{
+  "name": "EnvironmentReading",
+  "type": "object",
+  "properties": {
+    "zone_id": {
+      "type": "string"
+    },
+    "building_id": {
+      "type": "string"
+    },
+    "temperature": {
+      "type": "number"
+    },
+    "humidity": {
+      "type": "number"
+    },
+    "co2_ppm": {
+      "type": "number"
+    },
+    "air_quality_index": {
+      "type": "number"
+    },
+    "pressure": {
+      "type": "number"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "Sensor",
+        "Manual",
+        "Simulated"
+      ],
+      "default": "Sensor"
+    }
+  },
+  "required": [
+    "zone_id",
+    "building_id"
+  ]
+}

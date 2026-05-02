@@ -1,0 +1,61 @@
+{
+  "name": "Alert",
+  "type": "object",
+  "properties": {
+    "building_id": {
+      "type": "string"
+    },
+    "zone_id": {
+      "type": "string"
+    },
+    "alert_type": {
+      "type": "string",
+      "enum": [
+        "High Temp",
+        "Low Temp",
+        "High Humidity",
+        "Low Humidity",
+        "High CO2",
+        "Equipment Fault",
+        "Offline Sensor",
+        "Filter Change Due",
+        "Other"
+      ],
+      "default": "Other"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+      ],
+      "default": "Medium"
+    },
+    "message": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Open",
+        "Acknowledged",
+        "Resolved"
+      ],
+      "default": "Open"
+    },
+    "acknowledged_by": {
+      "type": "string"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "building_id",
+    "alert_type",
+    "severity"
+  ]
+}

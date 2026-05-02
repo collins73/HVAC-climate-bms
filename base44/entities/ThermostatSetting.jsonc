@@ -1,0 +1,55 @@
+{
+  "name": "ThermostatSetting",
+  "type": "object",
+  "properties": {
+    "zone_id": {
+      "type": "string"
+    },
+    "building_id": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "Cool",
+        "Heat",
+        "Auto",
+        "Fan Only",
+        "Off"
+      ],
+      "default": "Auto"
+    },
+    "setpoint_cooling": {
+      "type": "number",
+      "default": 74
+    },
+    "setpoint_heating": {
+      "type": "number",
+      "default": 68
+    },
+    "fan_mode": {
+      "type": "string",
+      "enum": [
+        "Auto",
+        "On",
+        "Circulate"
+      ],
+      "default": "Auto"
+    },
+    "schedule_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "override_until": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_updated_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "zone_id",
+    "building_id"
+  ]
+}
