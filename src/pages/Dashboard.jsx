@@ -8,6 +8,7 @@ import SensorReadout from '@/components/shared/SensorReadout';
 import PageHeader from '@/components/shared/PageHeader';
 import ZoneTrendChart from '@/components/dashboard/ZoneTrendChart';
 import EnergyMonitor from '@/components/dashboard/EnergyMonitor';
+import ExportReportButton from '@/components/dashboard/ExportReportButton';
 
 export default function Dashboard() {
   const [buildings, setBuildings] = useState([]);
@@ -57,9 +58,12 @@ export default function Dashboard() {
         title="Dashboard"
         subtitle="Environmental Control Overview"
         actions={
-          <div className="flex items-center gap-2 text-xs text-muted-foreground bg-card border border-border rounded-lg px-3 py-1.5">
-            <Activity className="w-3 h-3 text-primary animate-pulse-slow" />
-            Live Monitoring
+          <div className="flex items-center gap-3">
+            <ExportReportButton buildings={buildings} />
+            <div className="flex items-center gap-2 text-xs text-muted-foreground bg-card border border-border rounded-lg px-3 py-1.5">
+              <Activity className="w-3 h-3 text-primary animate-pulse-slow" />
+              Live Monitoring
+            </div>
           </div>
         }
       />
