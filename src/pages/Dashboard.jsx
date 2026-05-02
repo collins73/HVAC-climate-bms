@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Building2, Thermometer, Droplets, AlertTriangle, ChevronRight, Activity, Layers } from 'lucide-react';
+import { Building2, Thermometer, Droplets, AlertTriangle, ChevronRight, Activity, Layers, TrendingUp } from 'lucide-react';
 import KPICard from '@/components/shared/KPICard';
 import StatusBadge from '@/components/shared/StatusBadge';
 import SensorReadout from '@/components/shared/SensorReadout';
 import PageHeader from '@/components/shared/PageHeader';
+import ZoneTrendChart from '@/components/dashboard/ZoneTrendChart';
 
 export default function Dashboard() {
   const [buildings, setBuildings] = useState([]);
@@ -166,6 +167,32 @@ export default function Dashboard() {
             })}
           </div>
         </div>
+      </div>
+      {/* Zone Trend Charts */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-primary" />
+            <h2 className="font-semibold text-foreground text-sm">Temperature & CO₂ Trends by Zone</h2>
+          </div>
+          <Link to="/zones" className="text-xs text-primary hover:text-primary/80 flex items-center gap-1">
+            Manage zones <ChevronRight className="w-3 h-3" />
+          </Link>
+        </div>
+        {loading ? (
+          <div className="bg-card border border-border rounded-xl p-10 text-center text-muted-foreground text-sm">Loading…</div>
+        ) : zones.length === 0 ? (
+          <div className="bg-card border border-border rounded-xl p-10 text-center">
+            <Layers className="w-10 h-10 mx-auto mb-3 text-muted-foreground opacity-30" />
+            <p className="text-sm text-muted-foreground">No zones yet — add buildings and zones to see trends</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {zones.map(zone => (
+              <ZoneTrendChart key={zone.id} zone={zone} readings={readings} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
