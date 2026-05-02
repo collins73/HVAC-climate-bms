@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { X, Plus, Thermometer, Droplets, Wind, Gauge, Zap, HelpCircle, Trash2, ChevronLeft, ChevronRight, Download, MapPin } from 'lucide-react';
+import { X, Plus, Thermometer, Droplets, Wind, Gauge, Zap, HelpCircle, Trash2, ChevronLeft, ChevronRight, Download, MapPin, Users } from 'lucide-react';
+import OccupancyOverlay from './OccupancyOverlay';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -104,6 +105,7 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
   const [pins, setPins] = useState([]);
   const [selectedPin, setSelectedPin] = useState(null);
   const [addingPin, setAddingPin] = useState(false);
+  const [occupancyMode, setOccupancyMode] = useState(false);
   const imgRef = useRef(null);
 
   const blueprint = blueprints?.[bpIndex];
@@ -194,14 +196,26 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
           )}
           <Button
             size="sm"
-            onClick={() => { setAddingPin(v => !v); setSelectedPin(null); }}
-            className={cn("gap-1.5 h-7 text-xs transition-all", addingPin
-              ? 'bg-amber-500/20 border border-amber-500/40 text-amber-400 hover:bg-amber-500/30'
-              : 'bg-primary text-primary-foreground hover:bg-primary/90'
+            onClick={() => { setOccupancyMode(v => !v); setAddingPin(false); setSelectedPin(null); }}
+            className={cn("gap-1.5 h-7 text-xs transition-all", occupancyMode
+              ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/30'
+              : 'bg-card border border-border text-muted-foreground hover:text-foreground'
             )}
           >
-            {addingPin ? <><X className="w-3 h-3" /> Cancel</> : <><Plus className="w-3 h-3" /> Add Sensor Pin</>}
+            <Users className="w-3 h-3" /> {occupancyMode ? 'Occupancy ON' : 'Occupancy'}
           </Button>
+          {!occupancyMode && (
+            <Button
+              size="sm"
+              onClick={() => { setAddingPin(v => !v); setSelectedPin(null); }}
+              className={cn("gap-1.5 h-7 text-xs transition-all", addingPin
+                ? 'bg-amber-500/20 border border-amber-500/40 text-amber-400 hover:bg-amber-500/30'
+                : 'bg-primary text-primary-foreground hover:bg-primary/90'
+              )}
+            >
+              {addingPin ? <><X className="w-3 h-3" /> Cancel</> : <><Plus className="w-3 h-3" /> Add Sensor Pin</>}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -218,36 +232,49 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
         {isImage(blueprint?.url) ? (
           <div
             ref={imgRef}
-            className={cn("relative select-none", addingPin ? 'cursor-crosshair' : 'cursor-default')}
-            onClick={handleImageClick}
+            className={cn("relative select-none", !occupancyMode && addingPin ? 'cursor-crosshair' : 'cursor-default')}
+            onClick={!occupancyMode ? handleImageClick : undefined}
           >
             <img src={blueprint.url} alt={blueprint.name} className="w-full h-auto block" draggable={false} />
-            <AnimatePresence>
-              {pins.map(pin => (
-                <PinDot
-                  key={pin.id}
-                  pin={pin}
-                  selected={selectedPin === pin.id}
-                  onClick={e => { e.stopPropagation(); setSelectedPin(selectedPin === pin.id ? null : pin.id); setAddingPin(false); }}
-                />
-              ))}
-            </AnimatePresence>
-            <AnimatePresence>
-              {selectedPin && (() => {
-                const pin = pins.find(p => p.id === selectedPin);
-                if (!pin) return null;
-                return (
-                  <PinPopover
-                    key={pin.id}
-                    pin={pin}
-                    zones={zones}
-                    onClose={() => setSelectedPin(null)}
-                    onSave={handleSavePin}
-                    onDelete={() => handleDeletePin(pin.id)}
-                  />
-                );
-              })()}
-            </AnimatePresence>
+
+            {/* Sensor pins — hidden in occupancy mode */}
+            {!occupancyMode && (
+              <>
+                <AnimatePresence>
+                  {pins.map(pin => (
+                    <PinDot
+                      key={pin.id}
+                      pin={pin}
+                      selected={selectedPin === pin.id}
+                      onClick={e => { e.stopPropagation(); setSelectedPin(selectedPin === pin.id ? null : pin.id); setAddingPin(false); }}
+                    />
+                  ))}
+                </AnimatePresence>
+                <AnimatePresence>
+                  {selectedPin && (() => {
+                    const pin = pins.find(p => p.id === selectedPin);
+                    if (!pin) return null;
+                    return (
+                      <PinPopover
+                        key={pin.id}
+                        pin={pin}
+                        zones={zones}
+                        onClose={() => setSelectedPin(null)}
+                        onSave={handleSavePin}
+                        onDelete={() => handleDeletePin(pin.id)}
+                      />
+                    );
+                  })()}
+                </AnimatePresence>
+              </>
+            )}
+
+            {/* Occupancy overlay */}
+            {occupancyMode && (
+              <AnimatePresence>
+                <OccupancyOverlay zones={zones} pins={pins} />
+              </AnimatePresence>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3 py-16 text-muted-foreground">
