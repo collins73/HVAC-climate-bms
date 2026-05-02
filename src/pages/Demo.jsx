@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Activity, Building2, Layers, Thermometer, AlertTriangle, ChevronRight, ChevronLeft, CheckCircle2, Play, LayoutDashboard, Wifi, Bell, Sliders } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const steps = [
   {
@@ -19,20 +20,20 @@ const steps = [
     visual: (
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-2">
-          {[['3', 'Active Buildings', 'text-cyan-400'], ['72°F', 'Avg Temp', 'text-amber-400'], ['49%', 'Avg Humidity', 'text-blue-400'], ['3', 'Open Alerts', 'text-red-400']].map(([v, l, c]) => (
-            <div key={l} className="bg-muted/60 border border-border rounded-xl p-3 text-center">
+          {[['3', 'Active Buildings', 'text-cyan-400'], ['72°F', 'Avg Temp', 'text-amber-400'], ['49%', 'Avg Humidity', 'text-blue-400'], ['3', 'Open Alerts', 'text-red-400']].map(([v, l, c], i) => (
+            <motion.div key={l} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} className="bg-muted/60 border border-border rounded-xl p-3 text-center">
               <div className={`text-2xl font-bold font-mono ${c}`}>{v}</div>
               <div className="text-xs text-muted-foreground mt-1">{l}</div>
-            </div>
+            </motion.div>
           ))}
         </div>
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
-          <div className="text-xs text-red-400 font-medium">1 Critical Alert · Warehouse North: 83°F</div>
-        </div>
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
-          {[['HQ Tower A', '4 zones', '2 alerts', 'Active'], ['Warehouse B', '2 zones', '1 alert', 'Active'], ['Research C', '2 zones', '0 alerts', 'Maintenance']].map(([n, z, a, s]) => (
-            <div key={n} className="flex items-center justify-between px-3 py-2.5 border-b border-border last:border-0">
+        <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }} className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 animate-pulse" />
+          <div className="text-xs text-red-400 font-medium">1 Critical Alert · High Temperature Detected</div>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="bg-card border border-border rounded-xl overflow-hidden">
+          {[['HQ Tower A', '4 zones', '2 alerts', 'Active'], ['Warehouse B', '2 zones', '1 alert', 'Active'], ['Research C', '2 zones', '0 alerts', 'Maintenance']].map(([n, z, a, s], i) => (
+            <motion.div key={n} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 + i * 0.1 }} className="flex items-center justify-between px-3 py-2.5 border-b border-border last:border-0">
               <div>
                 <div className="text-sm font-medium text-foreground">{n}</div>
                 <div className="text-xs text-muted-foreground">{z}</div>
@@ -41,9 +42,9 @@ const steps = [
                 {a !== '0 alerts' && <span className="text-xs text-red-400 bg-red-500/10 rounded px-1.5 py-0.5">{a}</span>}
                 <span className={`text-xs rounded-full px-2 py-0.5 border ${s === 'Active' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-amber-400 border-amber-500/30 bg-amber-500/10'}`}>{s}</span>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     ),
   },
@@ -61,15 +62,15 @@ const steps = [
     ],
     visual: (
       <div className="space-y-3">
-        <div className="flex items-center gap-2 bg-card border border-border rounded-lg px-3 py-2">
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex items-center gap-2 bg-card border border-border rounded-lg px-3 py-2">
           <div className="w-4 h-4 text-muted-foreground">🔍</div>
           <span className="text-sm text-muted-foreground">Search buildings…</span>
-        </div>
+        </motion.div>
         {[
           { name: 'HQ Tower A', addr: 'Austin, TX', floors: 12, zones: 4, alerts: 2, status: 'Active' },
           { name: 'Warehouse B', addr: 'Austin, TX', floors: 2, zones: 2, alerts: 1, status: 'Active' },
-        ].map(b => (
-          <div key={b.name} className="bg-card border border-border rounded-xl p-4">
+        ].map((b, i) => (
+          <motion.div key={b.name} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 + i * 0.15 }} className="bg-card border border-border rounded-xl p-4">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                 <Building2 className="w-4 h-4 text-primary" />
@@ -85,7 +86,7 @@ const steps = [
               <div className="bg-muted/50 rounded-lg p-2 border border-border"><div className="font-bold font-mono text-cyan-400">{b.zones}</div><div className="text-xs text-muted-foreground">Zones</div></div>
               <div className="bg-muted/50 rounded-lg p-2 border border-border"><div className={`font-bold font-mono ${b.alerts > 0 ? 'text-red-400' : 'text-emerald-400'}`}>{b.alerts}</div><div className="text-xs text-muted-foreground">Alerts</div></div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     ),
@@ -104,34 +105,37 @@ const steps = [
     ],
     visual: (
       <div className="space-y-3">
-        <div className="bg-card border border-border rounded-xl p-4">
+        <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="bg-card border border-border rounded-xl p-4">
           <div className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Current Conditions</div>
           <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="bg-muted/50 border border-border rounded-lg p-3"><div className="text-xl font-bold font-mono text-cyan-400">74°</div><div className="text-xs text-muted-foreground">Temp (°F)</div></div>
-            <div className="bg-muted/50 border border-border rounded-lg p-3"><div className="text-xl font-bold font-mono text-blue-400">52%</div><div className="text-xs text-muted-foreground">Humidity</div></div>
-            <div className="bg-muted/50 border border-border rounded-lg p-3"><div className="text-xl font-bold font-mono text-purple-400">890</div><div className="text-xs text-muted-foreground">CO₂ ppm</div></div>
-          </div>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-4">
-          <div className="text-xs text-muted-foreground uppercase tracking-wider mb-3">HVAC Mode</div>
-          <div className="flex gap-1.5">
-            {[['Cool','blue'], ['Heat','orange'], ['Auto','cyan'], ['Fan','purple'], ['Off','muted']].map(([m, c]) => (
-              <div key={m} className={cn("flex-1 py-2 text-center text-xs rounded-lg border font-medium",
-                m === 'Auto' ? 'border-cyan-500/40 bg-cyan-500/10 text-cyan-400' : 'border-border text-muted-foreground'
-              )}>{m}</div>
+            {[['74°', 'Temp (°F)', 'text-cyan-400'], ['52%', 'Humidity', 'text-blue-400'], ['890', 'CO₂ ppm', 'text-purple-400']].map(([v, l, c], i) => (
+              <motion.div key={l} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.1 }} className="bg-muted/50 border border-border rounded-lg p-3">
+                <div className={`text-xl font-bold font-mono ${c}`}>{v}</div>
+                <div className="text-xs text-muted-foreground">{l}</div>
+              </motion.div>
             ))}
           </div>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-4">
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-card border border-border rounded-xl p-4">
+          <div className="text-xs text-muted-foreground uppercase tracking-wider mb-3">HVAC Mode</div>
+          <div className="flex gap-1.5">
+            {[['Cool', false], ['Heat', false], ['Auto', true], ['Fan', false], ['Off', false]].map(([m, active], i) => (
+              <motion.div key={m} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.45 + i * 0.07 }}
+                className={cn("flex-1 py-2 text-center text-xs rounded-lg border font-medium", active ? 'border-cyan-500/40 bg-cyan-500/10 text-cyan-400' : 'border-border text-muted-foreground')}
+              >{m}</motion.div>
+            ))}
+          </div>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="bg-card border border-border rounded-xl p-4">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs text-blue-400 font-medium">Cooling Setpoint</span>
             <span className="text-lg font-bold font-mono text-blue-400">74°F</span>
           </div>
-          <div className="h-2 bg-muted rounded-full relative">
-            <div className="absolute left-0 top-0 h-2 w-2/3 bg-blue-500/60 rounded-full" />
-            <div className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-400 border-2 border-background shadow" style={{ left: '63%' }} />
+          <div className="h-2 bg-muted rounded-full relative overflow-hidden">
+            <motion.div initial={{ width: 0 }} animate={{ width: '66%' }} transition={{ delay: 0.75, duration: 0.6, ease: 'easeOut' }} className="absolute left-0 top-0 h-2 bg-blue-500/60 rounded-full" />
+            <motion.div initial={{ left: '10%' }} animate={{ left: '63%' }} transition={{ delay: 0.75, duration: 0.6, ease: 'easeOut' }} className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-400 border-2 border-background shadow" />
           </div>
-        </div>
+        </motion.div>
       </div>
     ),
   },
@@ -149,7 +153,7 @@ const steps = [
     ],
     visual: (
       <div className="space-y-3">
-        <div className="flex gap-1 bg-card border border-border rounded-xl p-1">
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex gap-1 bg-card border border-border rounded-xl p-1">
           {[['Open', '3', true], ['Acknowledged', '1', false], ['Resolved', '1', false]].map(([s, n, active]) => (
             <div key={s} className={cn("flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all",
               active ? 'bg-primary/15 text-primary border border-primary/20' : 'text-muted-foreground'
@@ -157,12 +161,12 @@ const steps = [
               {s} <span className={cn("text-xs w-4 h-4 rounded-full flex items-center justify-center", active ? 'bg-primary/20 text-primary' : 'bg-muted')}>{n}</span>
             </div>
           ))}
-        </div>
+        </motion.div>
         {[
-          { type: 'High Temp', sev: 'Critical', msg: 'Warehouse North: 83°F — Immediate action', color: 'border-red-500/30', dot: 'bg-red-400 animate-pulse', sevCls: 'text-red-400' },
+          { type: 'High Temp', sev: 'Critical', msg: 'Zone temperature threshold exceeded', color: 'border-red-500/30', dot: 'bg-red-400 animate-pulse', sevCls: 'text-red-400' },
           { type: 'High CO2', sev: 'High', msg: 'Conference Center CO₂ at 1100 ppm', color: 'border-orange-500/20', dot: 'bg-orange-400', sevCls: 'text-orange-400' },
-        ].map(a => (
-          <div key={a.type} className={`bg-card border ${a.color} rounded-xl p-3 flex gap-3`}>
+        ].map((a, i) => (
+          <motion.div key={a.type} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 + i * 0.15 }} className={`bg-card border ${a.color} rounded-xl p-3 flex gap-3`}>
             <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${a.dot}`} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
@@ -175,7 +179,7 @@ const steps = [
               <div className="text-xs px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-center">Ack</div>
               <div className="text-xs px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-center">Fix</div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     ),
@@ -194,7 +198,7 @@ const steps = [
     ],
     visual: (
       <div className="space-y-3">
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="bg-card border border-border rounded-xl overflow-hidden">
           <div className="px-4 py-3 border-b border-border flex justify-between items-center">
             <span className="text-sm font-semibold text-foreground">Schedules</span>
             <span className="text-xs text-primary">+ Add</span>
@@ -203,8 +207,8 @@ const steps = [
             { name: 'Business Hours', time: '08:00 – 18:00', mode: 'Auto', days: [1,2,3,4,5], active: true },
             { name: 'Weekend Setback', time: '09:00 – 15:00', mode: 'Fan Only', days: [0,6], active: true },
             { name: 'After Hours', time: '18:00 – 08:00', mode: 'Off', days: [1,2,3,4,5], active: false },
-          ].map(s => (
-            <div key={s.name} className="p-3 border-b border-border last:border-0">
+          ].map((s, i) => (
+            <motion.div key={s.name} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 + i * 0.12 }} className="p-3 border-b border-border last:border-0">
               <div className="flex justify-between items-start mb-1.5">
                 <div>
                   <div className="text-sm font-medium text-foreground">{s.name}</div>
@@ -215,13 +219,13 @@ const steps = [
                 </div>
               </div>
               <div className="flex gap-0.5">
-                {['S','M','T','W','T','F','S'].map((d, i) => (
-                  <span key={i} className={cn("text-xs w-5 h-5 rounded flex items-center justify-center", s.days.includes(i) ? 'bg-primary/20 text-primary' : 'text-muted-foreground/30')}>{d}</span>
+                {['S','M','T','W','T','F','S'].map((d, idx) => (
+                  <span key={idx} className={cn("text-xs w-5 h-5 rounded flex items-center justify-center", s.days.includes(idx) ? 'bg-primary/20 text-primary' : 'text-muted-foreground/30')}>{d}</span>
                 ))}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     ),
   },
@@ -229,8 +233,14 @@ const steps = [
 
 export default function Demo() {
   const [active, setActive] = useState(0);
+  const [direction, setDirection] = useState(1);
   const step = steps[active];
   const Icon = step.icon;
+
+  const navigate = (next) => {
+    setDirection(next > active ? 1 : -1);
+    setActive(next);
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -250,22 +260,24 @@ export default function Demo() {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <div className="text-center mb-8">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 text-xs text-primary font-medium mb-4">
             <Play className="w-3 h-3" /> Interactive Demo
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">How It Works</h1>
           <p className="text-muted-foreground">Walk through the 5 core features of the HVAC Control platform.</p>
-        </div>
+        </motion.div>
 
         {/* Step Pills */}
         <div className="flex gap-2 overflow-x-auto pb-2 mb-8 scrollbar-hide">
           {steps.map((s, i) => {
             const StepIcon = s.icon;
             return (
-              <button
+              <motion.button
                 key={s.id}
-                onClick={() => setActive(i)}
+                onClick={() => navigate(i)}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
                 className={cn(
                   "flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium whitespace-nowrap transition-all flex-shrink-0",
                   active === i
@@ -275,7 +287,7 @@ export default function Demo() {
               >
                 <StepIcon className="w-3.5 h-3.5" />
                 {s.title}
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -283,51 +295,66 @@ export default function Demo() {
         {/* Main Demo Area */}
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Left: Explanation */}
-          <div className="bg-card border border-border rounded-2xl p-6 sm:p-8">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                <Icon className="w-5 h-5 text-primary" />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`left-${active}`}
+              initial={{ opacity: 0, x: direction * 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: direction * -30 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="bg-card border border-border rounded-2xl p-6 sm:p-8"
+            >
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                  <Icon className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <div className="text-xs text-primary font-medium">{step.tag}</div>
+                  <h2 className="text-xl font-bold text-foreground">{step.title}</h2>
+                </div>
               </div>
-              <div>
-                <div className="text-xs text-primary font-medium">{step.tag}</div>
-                <h2 className="text-xl font-bold text-foreground">{step.title}</h2>
-              </div>
-            </div>
-            <p className="text-muted-foreground leading-relaxed mb-6 text-sm">{step.desc}</p>
-            <ul className="space-y-3">
-              {step.highlights.map(h => (
-                <li key={h} className="flex items-start gap-3 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">{h}</span>
-                </li>
-              ))}
-            </ul>
-
-            {/* Nav */}
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
-              <button
-                onClick={() => setActive(i => Math.max(0, i - 1))}
-                disabled={active === 0}
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" /> Previous
-              </button>
-              <div className="flex gap-1.5">
-                {steps.map((_, i) => (
-                  <button key={i} onClick={() => setActive(i)} className={cn("w-2 h-2 rounded-full transition-all", i === active ? 'bg-primary w-5' : 'bg-border hover:bg-muted-foreground')} />
+              <p className="text-muted-foreground leading-relaxed mb-6 text-sm">{step.desc}</p>
+              <ul className="space-y-3">
+                {step.highlights.map((h, i) => (
+                  <motion.li
+                    key={h}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.15 + i * 0.08 }}
+                    className="flex items-start gap-3 text-sm"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">{h}</span>
+                  </motion.li>
                 ))}
-              </div>
-              {active < steps.length - 1 ? (
-                <button onClick={() => setActive(i => i + 1)} className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors">
-                  Next <ChevronRight className="w-4 h-4" />
+              </ul>
+
+              {/* Nav */}
+              <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+                <button
+                  onClick={() => navigate(Math.max(0, active - 1))}
+                  disabled={active === 0}
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Previous
                 </button>
-              ) : (
-                <Link to="/dashboard" className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium">
-                  Launch App <ChevronRight className="w-4 h-4" />
-                </Link>
-              )}
-            </div>
-          </div>
+                <div className="flex gap-1.5">
+                  {steps.map((_, i) => (
+                    <button key={i} onClick={() => navigate(i)} className={cn("h-2 rounded-full transition-all duration-300", i === active ? 'bg-primary w-5' : 'w-2 bg-border hover:bg-muted-foreground')} />
+                  ))}
+                </div>
+                {active < steps.length - 1 ? (
+                  <button onClick={() => navigate(active + 1)} className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors">
+                    Next <ChevronRight className="w-4 h-4" />
+                  </button>
+                ) : (
+                  <Link to="/dashboard" className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium">
+                    Launch App <ChevronRight className="w-4 h-4" />
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
 
           {/* Right: Visual */}
           <div className="bg-card border border-border rounded-2xl p-6">
@@ -339,17 +366,27 @@ export default function Demo() {
               </div>
               Live Preview
             </div>
-            {step.visual}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`visual-${active}`}
+                initial={{ opacity: 0, y: 16 * direction }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 * direction }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+              >
+                {step.visual}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-10 text-center">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-10 text-center">
           <p className="text-muted-foreground mb-4">Ready to manage your facilities?</p>
           <Link to="/dashboard" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
             <Activity className="w-4 h-4" /> Go to Dashboard
           </Link>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
