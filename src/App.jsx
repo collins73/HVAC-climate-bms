@@ -16,6 +16,7 @@ import Zones from '@/pages/Zones';
 import ZoneControl from '@/pages/ZoneControl';
 import Alerts from '@/pages/Alerts';
 import ImportBlueprint from '@/pages/ImportBlueprint';
+import Blueprints from '@/pages/Blueprints';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -55,6 +56,7 @@ const AuthenticatedApp = () => {
         <Route path="/zones/:id" element={<ZoneControl />} />
         <Route path="/alerts" element={<Alerts />} />
         <Route path="/import" element={<ImportBlueprint />} />
+        <Route path="/blueprints" element={<Blueprints />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />

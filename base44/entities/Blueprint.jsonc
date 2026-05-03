@@ -1,0 +1,47 @@
+{
+  "name": "Blueprint",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display name for this blueprint"
+    },
+    "building_id": {
+      "type": "string",
+      "description": "Associated building ID"
+    },
+    "floor": {
+      "type": "number",
+      "description": "Floor number this blueprint represents"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL of the uploaded blueprint file"
+    },
+    "file_type": {
+      "type": "string",
+      "enum": [
+        "image",
+        "pdf"
+      ],
+      "default": "image",
+      "description": "Type of the uploaded file"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional notes or description"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Optional tags for categorization"
+    }
+  },
+  "required": [
+    "name",
+    "building_id",
+    "file_url"
+  ]
+}
