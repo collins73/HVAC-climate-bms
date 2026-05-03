@@ -89,8 +89,8 @@ Perfect for **multi-building portfolios**, **data centers**, **commercial real e
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
-   cd hvac-platform
+   git clone https://github.com/collins73/HVAC-climate-bms.git
+   cd HVAC-climate-bms
    ```
 
 2. **Install dependencies**
