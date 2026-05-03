@@ -17,6 +17,14 @@
     "zip": {
       "type": "string"
     },
+    "latitude": {
+      "type": "number",
+      "description": "Facility latitude for map display"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Facility longitude for map display"
+    },
     "floors": {
       "type": "number"
     },

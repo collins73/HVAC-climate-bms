@@ -1,30 +1,45 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { RefreshCw, Activity, AlertCircle, CheckCircle2, Clock, Building2, Wifi, WifiOff } from 'lucide-react';
+import { RefreshCw, Activity, AlertCircle, CheckCircle2, Clock, Building2, Wifi, WifiOff, Map as MapIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/shared/PageHeader';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
+import FacilityMap from '@/components/monitor/FacilityMap';
 
 export default function FacilitiesMonitor() {
   const [credentials, setCredentials] = useState([]);
+  const [facilities, setFacilities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
-  const loadCredentials = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
       const creds = await base44.entities.APICredential.list('-created_date', 100);
       setCredentials(creds);
+
+      // Fetch all buildings to show on map
+      const buildings = await base44.entities.Building.list('-updated_date', 100);
+      const facilitiesWithStatus = buildings.map(b => {
+        const cred = creds.find(c => c.facilities && c.facilities.includes(b.id));
+        return {
+          ...b,
+          credential: cred,
+          isActive: cred && cred.enabled && (!cred.expires_at || new Date(cred.expires_at) >= new Date()),
+          lastSync: cred?.last_used || null,
+        };
+      });
+      setFacilities(facilitiesWithStatus);
       setLastRefresh(new Date());
     } catch (error) {
-      toast.error('Failed to load API credentials');
+      toast.error('Failed to load data');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { loadCredentials(); }, []);
+  useEffect(() => { loadData(); }, []);
 
   const getStatusColor = (credential) => {
     if (!credential.enabled) return 'text-muted-foreground bg-muted/30 border-muted';
@@ -68,7 +83,7 @@ export default function FacilitiesMonitor() {
         subtitle="View connection status and sync activity for all API-connected facilities"
         actions={
           <Button
-            onClick={loadCredentials}
+            onClick={loadData}
             disabled={loading}
             className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2"
           >
@@ -77,6 +92,15 @@ export default function FacilitiesMonitor() {
           </Button>
         }
       />
+
+      {/* Map view */}
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <div className="p-4 border-b border-border bg-muted/30 flex items-center gap-2">
+          <MapIcon className="w-4 h-4 text-primary" />
+          <h3 className="text-sm font-semibold text-foreground">Facility Locations</h3>
+        </div>
+        <FacilityMap facilities={facilities} />
+      </div>
 
       {/* Summary stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
