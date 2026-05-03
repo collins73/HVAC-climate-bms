@@ -240,6 +240,9 @@ export default function Landing() {
             <a href="#demo" className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:block">
               Live Demo
             </a>
+            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Dashboard
+            </Link>
             <Link to="/dashboard" className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
               Open App <ChevronRight className="w-3.5 h-3.5" />
             </Link>
