@@ -381,6 +381,13 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
                   >
                     <BarChart2 className="w-3.5 h-3.5" />
                   </button>
+                  <button
+                    onClick={() => handleDeletePin(pin.id)}
+                    className="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                    title="Delete sensor"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               );
             })}
