@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Wrench, Loader2, Download, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import HVACPanelShell, { ResultSection, FormField, inputCls, selectCls, exportText } from './HVACPanelShell';
+import BuildingImporter from './BuildingImporter';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const CLIMATE_ZONES = ['1A','2A','2B','3A','3B','3C','4A','4B','4C','5A','5B','6A','6B','7'];
@@ -46,7 +47,12 @@ export default function EquipmentSelectorPanel({ onClose }) {
       <div className="max-w-4xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Form */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-white">Building Parameters</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-white">Building Parameters</h3>
+            <BuildingImporter accentColor="cyan" onImport={(building, zones) => {
+              setForm(f => ({ ...f, sqft: building.total_sqft || '', zone_count: zones.length || f.zone_count }));
+            }} />
+          </div>
           <FormField label="Building Square Footage *">
             <input className={inputCls} type="number" placeholder="e.g. 25000" value={form.sqft} onChange={e => set('sqft', e.target.value)} />
           </FormField>

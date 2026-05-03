@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Home, Loader2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import HVACPanelShell, { ResultSection, FormField, inputCls, selectCls, exportText } from './HVACPanelShell';
+import BuildingImporter from './BuildingImporter';
 
 export default function ResidentialDesignPanel({ onClose }) {
   const [form, setForm] = useState({ sqft: '', bedrooms: '', floors: '1', city: '', state: '', has_existing: false });
@@ -45,7 +46,12 @@ export default function ResidentialDesignPanel({ onClose }) {
       <div className="max-w-4xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Form */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-white">Home Details</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-white">Home Details</h3>
+            <BuildingImporter accentColor="emerald" onImport={(building) => {
+              setForm(f => ({ ...f, sqft: building.total_sqft || '', floors: building.floors ? String(building.floors) : f.floors, city: building.city || '', state: building.state || '' }));
+            }} />
+          </div>
           <FormField label="Home Square Footage *">
             <input className={inputCls} type="number" placeholder="2400" value={form.sqft} onChange={e => set('sqft', e.target.value)} />
           </FormField>

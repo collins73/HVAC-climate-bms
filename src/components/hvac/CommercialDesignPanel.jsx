@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Building2, Loader2, Download, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import HVACPanelShell, { ResultSection, FormField, inputCls, selectCls, exportText } from './HVACPanelShell';
+import BuildingImporter from './BuildingImporter';
 
 const ZONE_TYPES = ['Office', 'Conference Room', 'Lobby', 'Server Room', 'Warehouse', 'Retail', 'Restroom', 'Storage', 'Other'];
 
@@ -50,7 +51,13 @@ export default function CommercialDesignPanel({ onClose }) {
       <div className="max-w-5xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Form */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-white">Building Information</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-white">Building Information</h3>
+            <BuildingImporter accentColor="amber" onImport={(building, zones) => {
+              setForm({ building_name: building.name, sqft: building.total_sqft || '', floors: building.floors || '', city: building.city || '', state: building.state || '' });
+              if (zones.length > 0) setZones(zones.map(z => ({ name: z.name, sqft: z.sqft || '', zone_type: z.zone_type || 'Office' })));
+            }} />
+          </div>
           <FormField label="Building Name *">
             <input className={inputCls} placeholder="e.g. Oakwood Office Complex" value={form.building_name} onChange={e => set('building_name', e.target.value)} />
           </FormField>
