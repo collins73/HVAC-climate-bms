@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, Building2, Thermometer, AlertTriangle, Layers, Wifi, Shield, Smartphone, ChevronRight, ChevronLeft, CheckCircle2, Zap, BarChart3, Clock, Globe, Play, Pause, LayoutDashboard, Sliders } from 'lucide-react';
+import { Activity, Building2, Thermometer, AlertTriangle, Layers, Wifi, Shield, Smartphone, ChevronRight, ChevronLeft, CheckCircle2, Zap, BarChart3, Clock, Globe, Play, Pause, LayoutDashboard, Sliders, Code2, Terminal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -179,6 +179,41 @@ const demoSteps = [
               </div>
             </motion.div>
           ))}
+        </motion.div>
+      </div>
+    ),
+  },
+  {
+    id: 6, title: 'API Integration', icon: Code2, tag: 'Step 6',
+    desc: 'Connect your buildings via REST API, CLI, Python, Docker, or any HTTP client. Pull live sensor data, push control commands, and integrate with external systems.',
+    highlights: ['Generate API keys with granular scopes in the dashboard', 'Use CLI tool, REST endpoints, Python SDK, or Docker containers', 'Monitor facility connections and sync status in real time', 'Secure hashed credentials with optional expiration dates'],
+    visual: (
+      <div className="space-y-3">
+        <motion.div initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} transition={{delay:0.1}} className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-border bg-muted/30 flex items-center gap-2">
+            <Terminal className="w-4 h-4 text-cyan-400" />
+            <span className="text-xs font-mono text-cyan-400">$ CLI</span>
+          </div>
+          <div className="p-3 space-y-2 font-mono text-xs">
+            {['hvac config --url "https://[endpoint]" --key "YOUR_KEY"','hvac list','hvac get FACILITY_ID','hvac readings ZONE_ID --limit 50'].map((cmd,i) => (
+              <motion.div key={cmd} initial={{opacity:0,x:-8}} animate={{opacity:1,x:0}} transition={{delay:0.2+i*0.1}} className="text-cyan-400">{cmd}</motion.div>
+            ))}
+          </div>
+        </motion.div>
+        <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{delay:0.6}} className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-border bg-muted/30 flex items-center gap-2">
+            <Code2 className="w-4 h-4 text-amber-400" />
+            <span className="text-xs font-mono text-amber-400">Python</span>
+          </div>
+          <div className="p-3 space-y-1 font-mono text-xs text-amber-400 max-h-24 overflow-hidden">
+            {['import requests','url = "https://[endpoint]/api/v1/facilities"','response = requests.get(url, params={"api_key": "YOUR_KEY"})','data = response.json()  # List all facilities'].map((line,i) => (
+              <motion.div key={line} initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.65+i*0.08}}>{line}</motion.div>
+            ))}
+          </div>
+        </motion.div>
+        <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{delay:1}} className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3">
+          <div className="text-xs text-emerald-400 font-medium mb-1">✓ Docker Ready</div>
+          <div className="text-xs text-muted-foreground">Pull sensor data from containers or push updates via API webhooks</div>
         </motion.div>
       </div>
     ),
