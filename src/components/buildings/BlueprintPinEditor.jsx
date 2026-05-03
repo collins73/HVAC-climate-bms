@@ -113,6 +113,7 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
   const [sensorHealthMode, setSensorHealthMode] = useState(false);
   const [latestReadingsByZone, setLatestReadingsByZone] = useState({});
   const [historyPin, setHistoryPin] = useState(null);
+  const [selectedSensors, setSelectedSensors] = useState(new Set());
   const imgRef = useRef(null);
 
   const blueprint = blueprints?.[bpIndex];
@@ -171,6 +172,20 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
     await base44.entities.SensorPin.delete(pinId);
     setPins(p => p.filter(pin => pin.id !== pinId));
     setSelectedPin(null);
+  };
+
+  const toggleSensorSelection = (pinId) => {
+    setSelectedSensors(prev => {
+      const next = new Set(prev);
+      next.has(pinId) ? next.delete(pinId) : next.add(pinId);
+      return next;
+    });
+  };
+
+  const handleBulkDelete = async () => {
+    await Promise.all(Array.from(selectedSensors).map(id => base44.entities.SensorPin.delete(id)));
+    setPins(p => p.filter(pin => !selectedSensors.has(pin.id)));
+    setSelectedSensors(new Set());
   };
 
   if (!blueprints?.length) {
@@ -348,20 +363,38 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
       {/* Pin legend */}
       {pins.length > 0 && (
         <div className="bg-card border border-border rounded-xl p-4">
-          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Sensor Legend</div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Sensor Legend</div>
+            {selectedSensors.size > 0 && (
+              <Button
+                size="sm"
+                onClick={handleBulkDelete}
+                className="h-6 text-xs bg-red-500/20 border border-red-500/40 text-red-400 hover:bg-red-500/30"
+              >
+                Delete {selectedSensors.size}
+              </Button>
+            )}
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {pins.map(pin => {
               const cfg = SENSOR_ICONS[pin.sensor_type] || SENSOR_ICONS.Other;
               const { Icon } = cfg;
               const zone = zones.find(z => z.id === pin.zone_id);
+              const isSelected = selectedSensors.has(pin.id);
               return (
                 <div
                   key={pin.id}
                   className={cn(
                     "flex items-center gap-2.5 p-2 rounded-lg border transition-all",
-                    selectedPin === pin.id ? 'bg-primary/10 border-primary/30' : 'border-border hover:border-primary/20'
+                    isSelected ? 'bg-red-500/10 border-red-500/30' : 'border-border hover:border-primary/20'
                   )}
                 >
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleSensorSelection(pin.id)}
+                    className="w-4 h-4 rounded cursor-pointer flex-shrink-0"
+                  />
                   <button
                     className="flex items-center gap-2.5 flex-1 min-w-0 text-left"
                     onClick={() => setSelectedPin(selectedPin === pin.id ? null : pin.id)}
