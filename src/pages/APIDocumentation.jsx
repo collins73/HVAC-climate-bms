@@ -290,6 +290,88 @@ export default function APIDocumentation() {
         </Tabs>
       </section>
 
+      {/* Testing & Sample Commands */}
+      <section className="bg-card border border-border rounded-xl p-6 space-y-4">
+        <h2 className="text-lg font-bold text-foreground">Testing Your Connection</h2>
+        <p className="text-sm text-muted-foreground">
+          Use these sample commands to test your API setup. Replace placeholders with your actual endpoint and API key.
+        </p>
+
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm font-semibold text-foreground mb-2">1. Test API Health</p>
+            <CodeBlock
+              code={`# Verify your API is responding
+curl "https://[your-function-url]/api/v1/health?api_key=YOUR_KEY"`}
+              id="test-health"
+            />
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold text-foreground mb-2">2. List Your Facilities</p>
+            <CodeBlock
+              code={`# Get all facilities you have access to
+curl "https://[your-function-url]/api/v1/facilities?api_key=YOUR_KEY"
+
+# Store the facility ID from the response for next steps`}
+              id="test-list"
+            />
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold text-foreground mb-2">3. Get Facility Details</p>
+            <CodeBlock
+              code={`# Get a specific facility and its zones
+# Replace FACILITY_ID with actual ID from previous command
+curl "https://[your-function-url]/api/v1/facilities/FACILITY_ID?api_key=YOUR_KEY"`}
+              id="test-detail"
+            />
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold text-foreground mb-2">4. Fetch Zone Sensor Readings</p>
+            <CodeBlock
+              code={`# Get environmental data for a zone
+# Replace ZONE_ID with actual ID from facility details
+curl "https://[your-function-url]/api/v1/zones/ZONE_ID/readings?api_key=YOUR_KEY&limit=20"`}
+              id="test-readings"
+            />
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold text-foreground mb-2">5. Using the CLI Tool</p>
+            <CodeBlock
+              code={`# Configure CLI with your endpoint and key
+hvac config --url "https://[your-function-url]" --key "YOUR_KEY"
+
+# Test the connection
+hvac health
+
+# List facilities
+hvac list
+
+# Get facility details
+hvac get [FACILITY_ID]
+
+# Get zone readings
+hvac readings [ZONE_ID] --limit 50`}
+              id="test-cli"
+            />
+          </div>
+        </div>
+
+        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4 text-sm">
+          <p className="font-semibold text-emerald-400 mb-2">✓ Connection Successful</p>
+          <p className="text-muted-foreground text-xs">If all commands return data, your local facilities are successfully connected to the platform. You can now:</p>
+          <ul className="text-muted-foreground text-xs mt-2 space-y-1 ml-4">
+            <li>• Monitor real-time sensor data</li>
+            <li>• Integrate with external systems</li>
+            <li>• Build custom dashboards</li>
+            <li>• Automate facility operations</li>
+          </ul>
+        </div>
+      </section>
+
       {/* Integration Examples */}
       <section className="bg-card border border-border rounded-xl p-6 space-y-4">
         <h2 className="text-lg font-bold text-foreground">Integration Examples</h2>
