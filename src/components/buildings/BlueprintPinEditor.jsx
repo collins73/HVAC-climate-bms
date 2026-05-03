@@ -124,15 +124,16 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
 
   const loadReadings = useCallback(async () => {
     if (!building?.id) return;
-    const readings = await base44.entities.EnvironmentReading.filter({ building_id: building.id });
-    // Keep only the latest reading per zone
+    // Fetch recent readings — filter by building_id if available, otherwise get all and filter client-side
+    const readings = await base44.entities.EnvironmentReading.list('-timestamp', 200);
     const byZone = {};
-    readings.forEach(r => {
-      if (!r.zone_id) return;
-      if (!byZone[r.zone_id] || r.timestamp > byZone[r.zone_id].timestamp) {
-        byZone[r.zone_id] = r;
-      }
-    });
+    readings
+      .filter(r => r.zone_id && (!r.building_id || r.building_id === building.id))
+      .forEach(r => {
+        if (!byZone[r.zone_id] || r.timestamp > byZone[r.zone_id].timestamp) {
+          byZone[r.zone_id] = r;
+        }
+      });
     setLatestReadingsByZone(byZone);
   }, [building?.id]);
 
@@ -324,9 +325,7 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
 
             {/* Sensor health overlay */}
             {sensorHealthMode && (
-              <div className="absolute inset-0">
-                <SensorHealthOverlay pins={pins} zones={zones} latestReadingsByZone={latestReadingsByZone} />
-              </div>
+              <SensorHealthOverlay pins={pins} zones={zones} latestReadingsByZone={latestReadingsByZone} />
             )}
           </div>
         ) : (
