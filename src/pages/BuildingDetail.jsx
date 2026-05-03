@@ -23,26 +23,31 @@ export default function BuildingDetail() {
   const [tab, setTab] = useState('zones'); // zones | blueprints | loads
 
   const load = async () => {
-    const [b, allBuildings, z, a, r, bps] = await Promise.all([
-      base44.entities.Building.filter({ id }),
-      base44.entities.Building.list(),
-      base44.entities.Zone.filter({ building_id: id }),
-      base44.entities.Alert.filter({ building_id: id }),
-      base44.entities.EnvironmentReading.list('-timestamp', 100),
-      base44.entities.Blueprint.filter({ building_id: id }),
-    ]);
-    const buildingRecord = b[0];
-    // Merge inline blueprints with Blueprint entity records (normalize to {name, url, floor})
-    const inlineUrls = new Set((buildingRecord?.blueprints || []).map(bp => bp.url));
-    const entityBps = bps
-      .filter(bp => !inlineUrls.has(bp.file_url))
-      .map(bp => ({ name: bp.name, url: bp.file_url, floor: bp.floor }));
-    const mergedBlueprints = [...(buildingRecord?.blueprints || []), ...entityBps];
-    setBuilding({ ...buildingRecord, blueprints: mergedBlueprints });
-    setBuildings(allBuildings);
-    setZones(z);
-    setAlerts(a);
-    setReadings(r.filter(r => r.building_id === id));
+    try {
+      const [b, allBuildings, z, a, r, bps] = await Promise.all([
+        base44.entities.Building.filter({ id }),
+        base44.entities.Building.list(),
+        base44.entities.Zone.filter({ building_id: id }),
+        base44.entities.Alert.filter({ building_id: id }),
+        base44.entities.EnvironmentReading.list('-timestamp', 100),
+        base44.entities.Blueprint.filter({ building_id: id }),
+      ]);
+      const buildingRecord = b[0];
+      // Merge inline blueprints with Blueprint entity records (normalize to {name, url, floor})
+      const inlineUrls = new Set((buildingRecord?.blueprints || []).map(bp => bp.url));
+      const entityBps = bps
+        .filter(bp => !inlineUrls.has(bp.file_url))
+        .map(bp => ({ name: bp.name, url: bp.file_url, floor: bp.floor }));
+      const mergedBlueprints = [...(buildingRecord?.blueprints || []), ...entityBps];
+      setBuilding({ ...buildingRecord, blueprints: mergedBlueprints });
+      setBuildings(allBuildings);
+      setZones(z);
+      setAlerts(a);
+      setReadings(r.filter(r => r.building_id === id));
+    } catch (error) {
+      console.error('Failed to load building data:', error);
+      setBuilding(null);
+    }
   };
 
   useEffect(() => { load(); }, [id]);
