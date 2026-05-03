@@ -66,16 +66,22 @@ export default function ImportBlueprint() {
 
   const handleConfirm = async () => {
     setStep('saving');
-    // 1. Create building
+    // 1. Create building (attach blueprint image if we have one)
     const building = await base44.entities.Building.create({
       name: parsed.building_name,
       address: parsed.address,
       floors: parsed.floors,
       total_sqft: parsed.total_sqft,
       status: 'Active',
+      blueprints: imageUrl ? [{
+        name: `Floor Plan`,
+        url: imageUrl,
+        floor: 1,
+        uploaded_at: new Date().toISOString(),
+      }] : [],
     });
 
-    // 2. Create zones + thermostat + schedule in parallel per zone
+    // 2. Create zones + thermostat + schedule + sensor pin per zone
     const zoneResults = [];
     for (const z of parsed.zones) {
       const zone = await base44.entities.Zone.create({
@@ -90,6 +96,9 @@ export default function ImportBlueprint() {
       zoneResults.push(zone);
 
       const defs = ASHRAE_DEFAULTS[z.zone_type] || ASHRAE_DEFAULTS.Other;
+      const sensorType = z.sensor_type || 'Temperature';
+      const hasPinCoords = z.x_pct != null && z.y_pct != null;
+
       await Promise.all([
         base44.entities.ThermostatSetting.create({
           zone_id: zone.id,
@@ -112,6 +121,16 @@ export default function ImportBlueprint() {
           mode: z.zone_type === 'Server Room' ? 'Cool' : 'Auto',
           is_active: true,
         }),
+        hasPinCoords ? base44.entities.SensorPin.create({
+          building_id: building.id,
+          blueprint_index: 0,
+          zone_id: zone.id,
+          label: z.name,
+          sensor_type: sensorType,
+          x_pct: parseFloat(z.x_pct.toFixed(2)),
+          y_pct: parseFloat(z.y_pct.toFixed(2)),
+          notes: z.notes || '',
+        }) : Promise.resolve(),
       ]);
     }
 
