@@ -25,6 +25,7 @@ import Leads from '@/pages/Leads';
 import TrialSignup from '@/pages/TrialSignup';
 import APIManagement from '@/pages/APIManagement';
 import APIDocumentation from '@/pages/APIDocumentation';
+import FacilitiesMonitor from '@/pages/FacilitiesMonitor';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -74,6 +75,7 @@ const AuthenticatedApp = () => {
         <Route path="/leads" element={<Leads />} />
         <Route path="/api" element={<APIManagement />} />
         <Route path="/api-docs" element={<APIDocumentation />} />
+        <Route path="/monitor" element={<FacilitiesMonitor />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
