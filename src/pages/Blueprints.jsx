@@ -34,7 +34,26 @@ export default function Blueprints() {
       base44.entities.Blueprint.list('-created_date'),
       base44.entities.Building.list(),
     ]).then(([bps, blds]) => {
-      setBlueprints(bps);
+      // Also surface blueprints stored inline on Building records
+      const inlineBps = [];
+      blds.forEach(b => {
+        (b.blueprints || []).forEach(bp => {
+          inlineBps.push({
+            id: `inline_${b.id}_${bp.url}`,
+            name: bp.name || 'Blueprint',
+            building_id: b.id,
+            floor: bp.floor,
+            file_url: bp.url,
+            file_type: /\.(png|jpg|jpeg|gif|webp|svg)(\?|$)/i.test(bp.url) ? 'image' : 'pdf',
+            description: '',
+            _inline: true,
+          });
+        });
+      });
+      // Deduplicate: prefer Blueprint entity records over inline
+      const entityUrls = new Set(bps.map(b => b.file_url));
+      const merged = [...bps, ...inlineBps.filter(b => !entityUrls.has(b.file_url))];
+      setBlueprints(merged);
       setBuildings(blds);
       setLoading(false);
     });
@@ -49,7 +68,9 @@ export default function Blueprints() {
   const handleCloseUpload = () => { setShowUpload(false); setDropFile(null); };
 
   const handleDelete = async (bp) => {
-    await base44.entities.Blueprint.delete(bp.id);
+    if (!bp._inline) {
+      await base44.entities.Blueprint.delete(bp.id);
+    }
     setBlueprints(prev => prev.filter(b => b.id !== bp.id));
   };
 
