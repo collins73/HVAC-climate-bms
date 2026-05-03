@@ -114,7 +114,12 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
   const [latestReadingsByZone, setLatestReadingsByZone] = useState({});
   const [historyPin, setHistoryPin] = useState(null);
   const [selectedSensors, setSelectedSensors] = useState(new Set());
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const imgRef = useRef(null);
+  const containerRef = useRef(null);
 
   const blueprint = blueprints?.[bpIndex];
   const isImage = (url) => url && /\.(png|jpg|jpeg|gif|webp|svg)(\?|$)/i.test(url);
@@ -160,6 +165,28 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
     setPins(p => [...p, newPin]);
     setSelectedPin(newPin.id);
     setAddingPin(false);
+  };
+
+  const handleMouseDown = (e) => {
+    if (addingPin || occupancyMode || heatmapMode || sensorHealthMode) return;
+    setIsPanning(true);
+    setPanStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isPanning) return;
+    setPan({ x: e.clientX - panStart.x, y: e.clientY - panStart.y });
+  };
+
+  const handleMouseUp = () => {
+    setIsPanning(false);
+  };
+
+  const handleWheel = (e) => {
+    if (addingPin || occupancyMode || heatmapMode || sensorHealthMode) return;
+    e.preventDefault();
+    const newZoom = Math.max(0.5, Math.min(3, zoom - e.deltaY * 0.001));
+    setZoom(newZoom);
   };
 
   const handleSavePin = async (form) => {
@@ -289,6 +316,25 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
 
       {/* Blueprint canvas */}
       <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <div
+          ref={containerRef}
+          className={cn("relative overflow-hidden bg-black/5", 
+            addingPin || occupancyMode || heatmapMode || sensorHealthMode ? '' : 'cursor-grab active:cursor-grabbing'
+          )}
+          style={{ height: '600px' }}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onWheel={handleWheel}
+        >
+          <div
+            style={{
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+              transformOrigin: '0 0',
+              transition: isPanning ? 'none' : 'transform 0.1s',
+            }}
+          >
         {isImage(blueprint?.url) ? (
           <div
             ref={imgRef}
@@ -358,6 +404,8 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
              )}
            </div>
          )}
+          </div>
+        </div>
       </div>
 
       {/* Pin legend */}
