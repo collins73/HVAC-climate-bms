@@ -7,6 +7,7 @@ import StatusBadge from '@/components/shared/StatusBadge';
 import SensorReadout from '@/components/shared/SensorReadout';
 import PageHeader from '@/components/shared/PageHeader';
 import ZoneTrendChart from '@/components/dashboard/ZoneTrendChart';
+import AllZonesTrendChart from '@/components/dashboard/AllZonesTrendChart';
 import EnergyMonitor from '@/components/dashboard/EnergyMonitor';
 import ExportReportButton from '@/components/dashboard/ExportReportButton';
 
@@ -176,6 +177,9 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      {/* 24h Trend Chart */}
+      {!loading && readings.length > 0 && <AllZonesTrendChart readings={readings} />}
+
       {/* Energy Monitor */}
       <EnergyMonitor
         zones={zones}

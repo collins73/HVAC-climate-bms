@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import StatusBadge from '@/components/shared/StatusBadge';
 import SensorReadout from '@/components/shared/SensorReadout';
 import OccupancyPanel from '@/components/zones/OccupancyPanel';
+import ZoneMiniChart from '@/components/zones/ZoneMiniChart';
 import { cn } from '@/lib/utils';
 
 const MODES = ['Cool', 'Heat', 'Auto', 'Fan Only', 'Off'];
@@ -320,6 +321,14 @@ export default function ZoneControl() {
               ))}
             </div>
           </div>
+
+          {/* Mini Trend Chart */}
+          {readings.length > 0 && (
+            <div className="bg-card border border-border rounded-xl p-4">
+              <h3 className="text-sm font-semibold text-foreground mb-3">Temp & CO₂ Trend</h3>
+              <ZoneMiniChart readings={readings} />
+            </div>
+          )}
 
           {/* Reading History */}
           <div className="bg-card border border-border rounded-xl overflow-hidden">

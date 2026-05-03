@@ -20,6 +20,15 @@ export default function AlertModal({ open, onClose, buildings, zones, onSaved })
 
   const handleSave = async () => {
     setSaving(true);
+    // Deduplication: skip if an Open alert of the same type already exists for the same zone
+    if (form.zone_id) {
+      const existing = await base44.entities.Alert.filter({ zone_id: form.zone_id, alert_type: form.alert_type, status: 'Open' });
+      if (existing.length > 0) {
+        setSaving(false);
+        onClose();
+        return;
+      }
+    }
     await base44.entities.Alert.create(form);
     setSaving(false);
     onSaved();

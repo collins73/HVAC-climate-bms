@@ -20,6 +20,7 @@ import Blueprints from '@/pages/Blueprints';
 import HVACDesigner from '@/pages/HVACDesigner';
 import EquipmentSelector from '@/pages/EquipmentSelector';
 import EnergyPredictor from '@/pages/EnergyPredictor';
+import AIDesign from '@/pages/AIDesign';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -63,6 +64,7 @@ const AuthenticatedApp = () => {
         <Route path="/hvac" element={<HVACDesigner />} />
         <Route path="/hvac/equipment" element={<EquipmentSelector />} />
         <Route path="/hvac/energy" element={<EnergyPredictor />} />
+        <Route path="/ai-design" element={<AIDesign />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />

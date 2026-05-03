@@ -1,0 +1,22 @@
+{
+  "name": "Waitlist",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Email address of the person joining the waitlist"
+    },
+    "name": {
+      "type": "string",
+      "description": "Optional name"
+    },
+    "source": {
+      "type": "string",
+      "description": "Where they signed up from",
+      "default": "ai-design"
+    }
+  },
+  "required": [
+    "email"
+  ]
+}

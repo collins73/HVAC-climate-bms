@@ -7,9 +7,9 @@ const navItems = [
   { path: '/buildings', label: 'Buildings', icon: Building2 },
   { path: '/zones', label: 'Zones', icon: Layers },
   { path: '/alerts', label: 'Alerts', icon: AlertTriangle },
-  { path: '/import', label: 'Import Blueprint', icon: Upload },
+  { path: '/import', label: 'Blueprint Import', icon: Upload },
   { path: '/blueprints', label: 'Blueprint Library', icon: FolderOpen },
-  { path: '/hvac', label: 'HVAC Designer', icon: Cpu },
+  { path: '/ai-design', label: 'AI Design', icon: Cpu },
 ];
 
 export default function Layout() {
