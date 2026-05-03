@@ -1,5 +1,5 @@
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Building2, LayoutDashboard, Layers, AlertTriangle, Activity, ChevronRight, Upload, FolderOpen } from 'lucide-react';
+import { Building2, LayoutDashboard, Layers, AlertTriangle, Activity, ChevronRight, Upload, FolderOpen, Cpu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -9,6 +9,7 @@ const navItems = [
   { path: '/alerts', label: 'Alerts', icon: AlertTriangle },
   { path: '/import', label: 'Import Blueprint', icon: Upload },
   { path: '/blueprints', label: 'Blueprint Library', icon: FolderOpen },
+  { path: '/hvac', label: 'HVAC Designer', icon: Cpu },
 ];
 
 export default function Layout() {

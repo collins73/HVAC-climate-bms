@@ -17,6 +17,9 @@ import ZoneControl from '@/pages/ZoneControl';
 import Alerts from '@/pages/Alerts';
 import ImportBlueprint from '@/pages/ImportBlueprint';
 import Blueprints from '@/pages/Blueprints';
+import HVACDesigner from '@/pages/HVACDesigner';
+import EquipmentSelector from '@/pages/EquipmentSelector';
+import EnergyPredictor from '@/pages/EnergyPredictor';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -57,6 +60,9 @@ const AuthenticatedApp = () => {
         <Route path="/alerts" element={<Alerts />} />
         <Route path="/import" element={<ImportBlueprint />} />
         <Route path="/blueprints" element={<Blueprints />} />
+        <Route path="/hvac" element={<HVACDesigner />} />
+        <Route path="/hvac/equipment" element={<EquipmentSelector />} />
+        <Route path="/hvac/energy" element={<EnergyPredictor />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
