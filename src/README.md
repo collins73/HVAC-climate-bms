@@ -118,59 +118,297 @@ Perfect for **multi-building portfolios**, **data centers**, **commercial real e
 
 ---
 
-## 📖 Core Workflows
+## 📖 Setup & Getting Started Guide
 
-### 1️⃣ Add Your First Building
+### ⚙️ Initial Dashboard Setup
 
-1. Navigate to **Buildings** → **+ Add Building**
-2. Enter building name, address, number of floors, and square footage
-3. Upload an optional cover image
-4. Click **Create**
+**Step 1: Log In & Access the Dashboard**
+1. Navigate to the app and sign in with your credentials
+2. Click **Dashboard** in the left sidebar
+3. You'll see the main overview with KPI cards, building summary, and zone snapshots
+4. If no buildings exist yet, you'll see an empty state — this is normal
 
-### 2️⃣ Define Zones
+**Step 2: Configure Your Organization Profile**
+1. Click your **profile icon** (top-right corner)
+2. Set your **timezone** for accurate scheduling (e.g., America/New_York)
+3. Enable **email notifications** for critical alerts
+4. Save preferences
 
-1. Open building detail page
-2. Click **+ Add Zone**
-3. Set zone name, type (Office, Server Room, etc.), floor, and square footage
-4. ASHRAE defaults apply automatically
-5. Save
+**Step 3: Invite Team Members** (Optional)
+1. Go to **Settings** → **Team**
+2. Click **+ Invite User**
+3. Enter email address and assign role (Admin or User)
+4. They'll receive an invite link via email
 
-### 3️⃣ Connect Sensors
+---
 
-1. Upload a blueprint via **Blueprint Import**
-2. AI extracts zone boundaries and dimensions
-3. Drag sensor pins onto the floor plan
-4. Link sensors to zones and define their type (temperature, humidity, CO₂)
-5. Start receiving live readings
+### 🏢 Step-by-Step: Add Your First Building
 
-### 4️⃣ Monitor & Control
+**1. Navigate to the Buildings Page**
+- Click **Buildings** in the sidebar
 
-1. View live sensor data on the **Dashboard**
-2. Open any zone to adjust HVAC setpoints
-3. Set up schedules for weekdays, weekends, and holidays
-4. Create alerts for high/low temperature thresholds
-5. Track alerts in the **Alerts** tab with bulk acknowledge/resolve
+**2. Create a New Building**
+- Click **+ Add Building** (blue button, top-right)
+- A modal form will appear
 
-### 5️⃣ Integrate with External Systems
+**3. Fill in Building Details**
+| Field | Instructions | Example |
+|-------|--------------|---------|
+| **Building Name** | Name of your facility | "Austin HQ Tower" |
+| **Address** | Street address | "123 Main St, Austin, TX" |
+| **City** | City name | "Austin" |
+| **State** | Two-letter state code | "TX" |
+| **Zip Code** | Five-digit postal code | "78701" |
+| **Number of Floors** | Total floors in building | "12" |
+| **Total Sq Ft** | Gross square footage | "250000" |
+| **Status** | Set to "Active" for operational buildings | "Active" |
+| **Cover Image** | Optional: upload building photo | Click to upload |
 
-**REST API:**
-```bash
-curl -X GET "https://api.hvac.example.com/v1/facilities?api_key=YOUR_KEY"
+**4. Save the Building**
+- Click **Create Building**
+- You'll be redirected to the building detail page
+
+**5. What Happens Next?**
+- The building appears in your Buildings list
+- You can now add zones and sensors to this building
+- The building is ready for zone configuration
+
+---
+
+### 🎯 Step-by-Step: Define Zones & Sensor Locations
+
+**1. Access Building Detail Page**
+- From **Buildings**, click the building card
+- You'll see tabs: **Zones**, **Blueprints**, **Load Estimation**, **Sensors**
+
+**2. Add Your First Zone**
+- Click the **Zones** tab
+- Click **+ Add Zone** (blue button)
+
+**3. Configure Zone Details**
+| Field | What It Means | Example |
+|-------|--------------|---------|
+| **Zone Name** | Human-readable name for the area | "Floor 3 East Wing" |
+| **Zone Type** | Building usage type (HVAC configures automatically) | "Office" |
+| **Floor** | Which floor this zone occupies | "3" |
+| **Square Footage** | Area of the zone | "5000" |
+| **Status** | Active, Inactive, or Maintenance | "Active" |
+| **Notes** | Any special details about this zone | "High occupancy 9am–5pm" |
+
+**Available Zone Types & Auto-Configurations:**
+- **Office** → Default setpoint: 72°F cooling, 68°F heating
+- **Server Room** → Strict: 68°F cooling, 65°F heating (24/7)
+- **Conference Room** → Standard office settings with higher variance tolerance
+- **Lobby** → Wider temperature band for comfort
+- **Warehouse** → Relaxed setpoints (76°F cooling, 62°F heating)
+- **Retail** → Customer comfort focus
+- **Residential** → Variable based on occupancy
+- **Other** → Manual configuration required
+
+**4. Save Zone**
+- Click **Create Zone**
+- The zone appears in the Zones list
+- Ready to add sensors
+
+---
+
+### 📡 Step-by-Step: Connect & Monitor Sensor Data
+
+#### **Option A: Upload Floor Plan (Recommended for Fast Setup)**
+
+**1. Prepare Your Blueprint**
+- Have a PDF or image (JPG/PNG) of your floor plan ready
+- Image should be clear, 150+ DPI, with visible room labels
+
+**2. Upload Blueprint**
+- Navigate to **Blueprint Import** (sidebar)
+- Click **+ Upload Blueprint**
+- Select your floor plan file
+- The AI will analyze it automatically (takes ~30 seconds)
+
+**3. Review AI-Extracted Data**
+- AI will show detected zones, dimensions, and room types
+- Review the suggestions and edit if needed
+- Confirm or adjust zone names and types
+
+**4. Place Sensor Pins**
+- Click **Blueprints** tab on building detail
+- Click on your uploaded blueprint to edit
+- Click "Add Sensor Pin" and drag to place sensors on the floor plan
+- Assign each pin to a zone and sensor type (Temperature, Humidity, CO₂, etc.)
+- Save
+
+**5. Start Receiving Data**
+- Once sensors are pinned and zones are created, sensor data will appear on the dashboard within minutes
+
+#### **Option B: Manual Sensor Configuration**
+
+**1. Know Your Sensor Details**
+- Sensor ID or location name
+- Sensor type (Temperature, Humidity, CO₂, Air Quality, etc.)
+- Which zone it monitors
+
+**2. Add Sensor via UI**
+- Go to **Zones** → click a zone
+- Click **+ Add Sensor**
+- Enter sensor details
+- Save
+
+**3. Verify Live Data**
+- Open the zone detail page
+- Check **Sensor Readout** card for real-time data
+- If no data, check that sensor is powered on and connected to network
+
+---
+
+### 📊 Step-by-Step: Start Monitoring & Controlling
+
+**1. View the Dashboard**
+- Click **Dashboard** in sidebar
+- You'll see:
+  - **KPI cards** (top): Building count, average temp/humidity, open alerts
+  - **Critical alerts banner** (red, if any)
+  - **Building cards** (middle): Each building with zone count and status
+  - **Zone snapshot grid** (bottom): Live readings for all zones
+
+**2. Monitor a Specific Zone**
+- From the zone snapshot grid, click any zone card
+- You'll open the **Zone Control Panel** with:
+  - **Current conditions**: Live temperature, humidity, CO₂, air quality
+  - **HVAC controls**: Mode selection (Cool/Heat/Auto/Fan/Off) and setpoint sliders
+  - **Alerts**: Active alerts specific to this zone
+  - **Schedules**: Weekly schedules for this zone
+  - **Historical chart**: 7-day temperature trend
+
+**3. Adjust Temperature Setpoints**
+- Open a zone
+- Locate **Cooling Setpoint** and **Heating Setpoint** sliders
+- Drag to desired temperature (e.g., 74°F for cooling)
+- Click **Apply** — change takes effect immediately
+- The HVAC system will adjust within 2–5 minutes
+
+**4. Change HVAC Mode**
+- From zone control panel, select mode:
+  - **Cool**: Active cooling to reach setpoint
+  - **Heat**: Active heating to reach setpoint
+  - **Auto**: System chooses based on current conditions
+  - **Fan Only**: Circulate air without heating/cooling
+  - **Off**: No HVAC operation (emergency only)
+
+**5. Enable Occupancy-Based Savings**
+- Open zone settings
+- Toggle **Energy Save Mode: ON**
+- Set **Unoccupied Cooling Setpoint** (e.g., 80°F)
+- Set **Unoccupied Heating Setpoint** (e.g., 62°F)
+- When zone is empty, HVAC will relax setpoints to save energy
+
+**6. Create Weekly Schedules**
+- Click **Schedules** tab (zone detail page)
+- Click **+ Add Schedule**
+- Configure:
+  - **Schedule Name**: "Business Hours" or "After Hours"
+  - **Days of Week**: Select which days (Mon–Fri, weekends, etc.)
+  - **Start Time**: When schedule begins (e.g., 08:00)
+  - **End Time**: When schedule ends (e.g., 18:00)
+  - **Mode**: HVAC mode for this period
+  - **Cooling/Heating Setpoints**: Target temperatures
+- Click **Save**
+- Repeat for different time periods (e.g., night setback, weekend)
+
+**Example Schedule:**
+```
+Schedule 1: Business Hours (Mon–Fri, 8am–6pm)
+  → Mode: Auto, Cool setpoint: 74°F, Heat setpoint: 68°F
+
+Schedule 2: After Hours (Mon–Fri, 6pm–8am)
+  → Mode: Off, Cool setpoint: 80°F, Heat setpoint: 62°F
+
+Schedule 3: Weekend (Sat–Sun, 24 hours)
+  → Mode: Off, Cool setpoint: 80°F, Heat setpoint: 62°F
 ```
 
-**Python SDK:**
-```python
+---
+
+### 🚨 Step-by-Step: Monitor & Respond to Alerts
+
+**1. View Active Alerts**
+- Click **Alerts** in sidebar
+- You'll see all open, acknowledged, and resolved alerts
+
+**2. Filter Alerts**
+- Use **Status** tabs: Open, Acknowledged, Resolved
+- Use **Severity** filter: Critical (red), High (orange), Medium (yellow), Low (blue)
+- Use **Search**: Find alerts by zone name or alert type
+
+**3. Respond to an Alert**
+- Click any open alert card
+- **Read the Details**: Alert type, affected zone, current value, threshold
+- Click **Acknowledge** → Mark that you're aware of the issue
+- When fixed, click **Resolve** → Close the alert
+
+**4. Create Alert Thresholds**
+- Go to a zone's settings
+- Click **Alert Rules**
+- Set thresholds:
+  - High Temperature Alert: 78°F
+  - Low Temperature Alert: 65°F
+  - High CO₂ Alert: 1000 ppm
+- When sensor exceeds threshold, alert fires automatically
+
+---
+
+### 🔗 Step-by-Step: Integrate with External Systems
+
+**1. Generate an API Key**
+- Click **API Keys** in sidebar
+- Click **+ Generate New Key**
+- Fill in:
+  - **Key Name**: "Mobile App", "Integration Server", etc.
+  - **Description**: What this key is used for
+  - **Scopes**: Check boxes for what the key can access
+    - `buildings:read` — List and view buildings
+    - `zones:read` — View zone data
+    - `zones:write` — Modify zone settings
+    - `readings:read` — Access sensor readings
+    - `alerts:read` — View alerts
+  - **Facilities** (optional): Leave empty for all, or select specific buildings
+  - **Expiration** (optional): Set an expiration date for security
+- Click **Generate**
+- **Copy the key immediately** — you won't see it again
+
+**2. Use the API Key in Your Code**
+```bash
+# REST API Example
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+  https://api.hvac.example.com/v1/facilities
+
+# Python SDK Example
 from hvac_sdk import HVACClient
-client = HVACClient(api_key="YOUR_KEY")
-facilities = client.list_facilities()
+client = HVACClient(api_key="YOUR_API_KEY")
+zones = client.get_zone(zone_id="zone_123")
+print(zones.temperature, zones.humidity)
 ```
 
-**CLI:**
-```bash
-hvac list
-hvac get FACILITY_ID
-hvac readings ZONE_ID --limit 50
-```
+**3. Set Up Webhooks for Real-Time Alerts**
+- Click **Webhooks** in sidebar
+- Click **+ Add Webhook**
+- Configure:
+  - **Webhook URL**: Where alerts should POST (e.g., `https://yourserver.com/alerts`)
+  - **Event Type**: What triggers the webhook (e.g., "alert.created")
+  - **Signing Secret**: Auto-generated for security verification
+- Click **Create**
+- Your system will now receive alerts in real-time
+
+---
+
+### 📈 Monitoring Best Practices
+
+1. **Check Dashboard Daily**: Review KPIs and alert counts
+2. **Set Aggressive Alert Thresholds**: Catch issues early (e.g., 76°F for high temp alert)
+3. **Schedule Regular Maintenance Windows**: Use "Maintenance" zone status when servicing equipment
+4. **Use Occupancy Awareness**: Enable energy-save mode to reduce waste during unoccupied hours
+5. **Review Weekly Summaries**: Dashboard emails a summary every Monday morning
+6. **Archive Resolved Alerts**: Clean up old alerts monthly for clarity
 
 ---
 
