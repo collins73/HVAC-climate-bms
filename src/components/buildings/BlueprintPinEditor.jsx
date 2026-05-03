@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { X, Plus, Thermometer, Droplets, Wind, Gauge, Zap, HelpCircle, Trash2, ChevronLeft, ChevronRight, Download, MapPin, Users, Flame, Activity } from 'lucide-react';
+import { X, Plus, Thermometer, Droplets, Wind, Gauge, Zap, HelpCircle, Trash2, ChevronLeft, ChevronRight, Download, MapPin, Users, Flame, Activity, BarChart2 } from 'lucide-react';
 import OccupancyOverlay from './OccupancyOverlay';
 import HeatmapOverlay from './HeatmapOverlay';
 import SensorHealthOverlay from './SensorHealthOverlay';
+import SensorHistoryDrawer from './SensorHistoryDrawer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -111,6 +112,7 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
   const [heatmapMode, setHeatmapMode] = useState(false);
   const [sensorHealthMode, setSensorHealthMode] = useState(false);
   const [latestReadingsByZone, setLatestReadingsByZone] = useState({});
+  const [historyPin, setHistoryPin] = useState(null);
   const imgRef = useRef(null);
 
   const blueprint = blueprints?.[bpIndex];
@@ -182,6 +184,7 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
   }
 
   return (
+    <>
     <div className="space-y-4">
       {/* Blueprint selector tabs */}
       {blueprints.length > 1 && (
@@ -352,27 +355,48 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
               const { Icon } = cfg;
               const zone = zones.find(z => z.id === pin.zone_id);
               return (
-                <button
+                <div
                   key={pin.id}
-                  onClick={() => setSelectedPin(selectedPin === pin.id ? null : pin.id)}
                   className={cn(
-                    "flex items-center gap-2.5 p-2 rounded-lg border text-left transition-all",
+                    "flex items-center gap-2.5 p-2 rounded-lg border transition-all",
                     selectedPin === pin.id ? 'bg-primary/10 border-primary/30' : 'border-border hover:border-primary/20'
                   )}
                 >
-                  <div className={cn("w-6 h-6 rounded-full border flex items-center justify-center flex-shrink-0", cfg.bg)}>
-                    <Icon className={cn("w-3 h-3", cfg.color)} />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-xs font-medium text-foreground truncate">{pin.label}</div>
-                    <div className="text-xs text-muted-foreground">{pin.sensor_type}{zone ? ` · ${zone.name}` : ''}</div>
-                  </div>
-                </button>
+                  <button
+                    className="flex items-center gap-2.5 flex-1 min-w-0 text-left"
+                    onClick={() => setSelectedPin(selectedPin === pin.id ? null : pin.id)}
+                  >
+                    <div className={cn("w-6 h-6 rounded-full border flex items-center justify-center flex-shrink-0", cfg.bg)}>
+                      <Icon className={cn("w-3 h-3", cfg.color)} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-medium text-foreground truncate">{pin.label}</div>
+                      <div className="text-xs text-muted-foreground">{pin.sensor_type}{zone ? ` · ${zone.name}` : ''}</div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setHistoryPin(pin)}
+                    className="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                    title="View 24h history"
+                  >
+                    <BarChart2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               );
             })}
           </div>
         </div>
       )}
     </div>
+
+      {/* Sensor history drawer */}
+      {historyPin && (
+        <SensorHistoryDrawer
+          pin={historyPin}
+          zone={zones.find(z => z.id === historyPin.zone_id)}
+          onClose={() => setHistoryPin(null)}
+        />
+      )}
+    </>
   );
 }
