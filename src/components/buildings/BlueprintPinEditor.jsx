@@ -118,8 +118,10 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+  const [legendScroll, setLegendScroll] = useState(0);
   const imgRef = useRef(null);
   const containerRef = useRef(null);
+  const legendRef = useRef(null);
 
   const blueprint = blueprints?.[bpIndex];
   const isImage = (url) => url && /\.(png|jpg|jpeg|gif|webp|svg)(\?|$)/i.test(url);
@@ -207,6 +209,14 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
       next.has(pinId) ? next.delete(pinId) : next.add(pinId);
       return next;
     });
+  };
+
+  const scrollLegend = (direction) => {
+    if (!legendRef.current) return;
+    const scrollAmount = 300;
+    const newScroll = Math.max(0, legendScroll + (direction === 'left' ? -scrollAmount : scrollAmount));
+    setLegendScroll(newScroll);
+    legendRef.current.scrollTo({ left: newScroll, behavior: 'smooth' });
   };
 
   const handleBulkDelete = async () => {
@@ -423,7 +433,21 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
               </Button>
             )}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="flex items-center gap-2">
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={() => scrollLegend('left')}
+              className="h-8 w-8 flex-shrink-0 border-border"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </Button>
+            <div
+              ref={legendRef}
+              className="flex-1 overflow-x-hidden"
+              style={{ scrollBehavior: 'smooth' }}
+            >
+              <div className="flex gap-2">
             {pins.map(pin => {
               const cfg = SENSOR_ICONS[pin.sensor_type] || SENSOR_ICONS.Other;
               const { Icon } = cfg;
@@ -472,6 +496,16 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
                 </div>
               );
             })}
+              </div>
+            </div>
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={() => scrollLegend('right')}
+              className="h-8 w-8 flex-shrink-0 border-border"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Button>
           </div>
         </div>
       )}
