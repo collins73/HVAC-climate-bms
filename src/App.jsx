@@ -25,6 +25,9 @@ import Leads from '@/pages/Leads';
 import TrialSignup from '@/pages/TrialSignup';
 import APIManagement from '@/pages/APIManagement';
 import APIDocumentation from '@/pages/APIDocumentation';
+import APIWebhooks from '@/pages/APIWebhooks';
+import PythonSDK from '@/pages/PythonSDK';
+import Integrations from '@/pages/Integrations';
 import FacilitiesMonitor from '@/pages/FacilitiesMonitor';
 
 const AuthenticatedApp = () => {
@@ -75,6 +78,9 @@ const AuthenticatedApp = () => {
         <Route path="/leads" element={<Leads />} />
         <Route path="/api" element={<APIManagement />} />
         <Route path="/api-docs" element={<APIDocumentation />} />
+        <Route path="/api-webhooks" element={<APIWebhooks />} />
+        <Route path="/python-sdk" element={<PythonSDK />} />
+        <Route path="/integrations" element={<Integrations />} />
         <Route path="/monitor" element={<FacilitiesMonitor />} />
       </Route>
 
