@@ -121,16 +121,16 @@ export default function ImportBlueprint() {
           mode: z.zone_type === 'Server Room' ? 'Cool' : 'Auto',
           is_active: true,
         }),
-        hasPinCoords ? base44.entities.SensorPin.create({
-          building_id: building.id,
-          blueprint_index: 0,
-          zone_id: zone.id,
-          label: z.name,
-          sensor_type: sensorType,
-          x_pct: parseFloat(z.x_pct.toFixed(2)),
-          y_pct: parseFloat(z.y_pct.toFixed(2)),
-          notes: z.notes || '',
-        }) : Promise.resolve(),
+        base44.entities.SensorPin.create({
+           building_id: building.id,
+           blueprint_index: 0,
+           zone_id: zone.id,
+           label: z.name,
+           sensor_type: sensorType,
+           x_pct: hasPinCoords ? parseFloat(z.x_pct.toFixed(2)) : 50,
+           y_pct: hasPinCoords ? parseFloat(z.y_pct.toFixed(2)) : 50,
+           notes: z.notes || '',
+         }),
       ]);
     }
 
@@ -307,7 +307,7 @@ export default function ImportBlueprint() {
           <div className="flex items-start gap-3 bg-primary/5 border border-primary/20 rounded-xl p-4">
             <Thermometer className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
             <div className="text-xs text-muted-foreground">
-              <span className="font-semibold text-foreground">ASHRAE Defaults Applied Automatically</span> — Each zone will receive thermostat setpoints and occupied schedules (Mon–Fri) based on zone type. Server Rooms get 24/7 cooling at 65°F.
+              <span className="font-semibold text-foreground">Full Auto-Setup</span> — Each zone will get thermostat setpoints, occupied schedules (Mon–Fri), and sensor pins automatically placed on the blueprint. Server Rooms get 24/7 cooling at 65°F. Adjust sensor positions anytime in the Blueprints tab.
             </div>
           </div>
 
@@ -340,7 +340,7 @@ export default function ImportBlueprint() {
             </div>
             <div className="text-center">
               <p className="text-lg font-bold text-foreground">Import Successful!</p>
-              <p className="text-sm text-muted-foreground mt-1">{savedSummary.building.name} has been created with {savedSummary.zones.length} zones</p>
+              <p className="text-sm text-muted-foreground mt-1">{savedSummary.building.name} has been created with {savedSummary.zones.length} zones and auto-pinned sensors</p>
             </div>
           </div>
 
