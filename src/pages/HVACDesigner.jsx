@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { Cpu, Building2, Home, Zap, TrendingDown, ChevronRight, BarChart3, Wrench } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import PageHeader from '@/components/shared/PageHeader';
+import EquipmentSelectorPanel from '@/components/hvac/EquipmentSelectorPanel';
+import EnergyPredictorPanel from '@/components/hvac/EnergyPredictorPanel';
+import CommercialDesignPanel from '@/components/hvac/CommercialDesignPanel';
+import ResidentialDesignPanel from '@/components/hvac/ResidentialDesignPanel';
+import LoadCalcPanel from '@/components/hvac/LoadCalcPanel';
 
 const MODULES = [
   {
@@ -12,7 +16,6 @@ const MODULES = [
     border: 'border-cyan-500/20',
     title: 'Equipment Selector',
     subtitle: 'AI-assisted sizing for commercial & residential systems',
-    path: '/hvac/equipment',
   },
   {
     id: 'predict',
@@ -22,7 +25,6 @@ const MODULES = [
     border: 'border-violet-500/20',
     title: 'Energy Predictor',
     subtitle: 'ML-driven forecasts and cost optimization recommendations',
-    path: '/hvac/energy',
   },
   {
     id: 'commercial',
@@ -32,7 +34,6 @@ const MODULES = [
     border: 'border-amber-500/20',
     title: 'Commercial Design',
     subtitle: 'RTU, chiller, VRF, and AHU design guidance',
-    path: '/hvac/equipment?type=commercial',
   },
   {
     id: 'residential',
@@ -42,11 +43,12 @@ const MODULES = [
     border: 'border-emerald-500/20',
     title: 'Residential Design',
     subtitle: 'Split systems, heat pumps, mini-split sizing',
-    path: '/hvac/equipment?type=residential',
   },
 ];
 
 export default function HVACDesigner() {
+  const [activePanel, setActivePanel] = useState(null);
+
   return (
     <div className="p-6 space-y-8 max-w-5xl mx-auto">
       <PageHeader
@@ -54,8 +56,11 @@ export default function HVACDesigner() {
         subtitle="AI-powered equipment selection, load-based sizing, and ML energy predictions for commercial & residential buildings"
       />
 
-      {/* Hero banner */}
-      <div className="relative bg-gradient-to-br from-primary/10 via-card to-violet-500/10 border border-primary/20 rounded-2xl p-8 overflow-hidden">
+      {/* Hero banner — clicking opens Load Calc panel */}
+      <button
+        onClick={() => setActivePanel('load_calc')}
+        className="w-full text-left relative bg-gradient-to-br from-primary/10 via-card to-violet-500/10 border border-primary/20 rounded-2xl p-8 overflow-hidden hover:border-primary/40 transition-all group"
+      >
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
           <div className="w-16 h-16 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center flex-shrink-0">
@@ -69,16 +74,19 @@ export default function HVACDesigner() {
               and recommend setpoint strategies that minimize operating costs.
             </p>
           </div>
+          <div className="flex items-center gap-2 text-sm text-primary font-medium flex-shrink-0">
+            Run Load Calc <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </div>
         </div>
-      </div>
+      </button>
 
       {/* Module cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {MODULES.map(m => {
           const Icon = m.icon;
           return (
-            <Link key={m.id} to={m.path}
-              className={`group bg-card border ${m.border} rounded-xl p-6 hover:bg-card/80 hover:border-opacity-60 transition-all`}>
+            <button key={m.id} onClick={() => setActivePanel(m.id)}
+              className={`group bg-card border ${m.border} rounded-xl p-6 hover:bg-card/80 hover:border-opacity-60 transition-all text-left`}>
               <div className="flex items-start gap-4">
                 <div className={`w-12 h-12 rounded-xl ${m.bg} border ${m.border} flex items-center justify-center flex-shrink-0`}>
                   <Icon className={`w-6 h-6 ${m.color}`} />
@@ -87,9 +95,9 @@ export default function HVACDesigner() {
                   <h3 className="font-semibold text-foreground mb-1">{m.title}</h3>
                   <p className="text-xs text-muted-foreground">{m.subtitle}</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors mt-1" />
+                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors mt-1 group-hover:translate-x-0.5 transition-transform" />
               </div>
-            </Link>
+            </button>
           );
         })}
       </div>
@@ -111,6 +119,13 @@ export default function HVACDesigner() {
           );
         })}
       </div>
+
+      {/* Panels */}
+      {activePanel === 'equipment' && <EquipmentSelectorPanel onClose={() => setActivePanel(null)} />}
+      {activePanel === 'predict' && <EnergyPredictorPanel onClose={() => setActivePanel(null)} />}
+      {activePanel === 'commercial' && <CommercialDesignPanel onClose={() => setActivePanel(null)} />}
+      {activePanel === 'residential' && <ResidentialDesignPanel onClose={() => setActivePanel(null)} />}
+      {activePanel === 'load_calc' && <LoadCalcPanel onClose={() => setActivePanel(null)} />}
     </div>
   );
 }
