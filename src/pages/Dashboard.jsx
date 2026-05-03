@@ -60,6 +60,9 @@ export default function Dashboard() {
         subtitle="Environmental Control Overview"
         actions={
           <div className="flex items-center gap-3">
+            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Home
+            </Link>
             <ExportReportButton buildings={buildings} />
             <div className="flex items-center gap-2 text-xs text-muted-foreground bg-card border border-border rounded-lg px-3 py-1.5">
               <Activity className="w-3 h-3 text-primary animate-pulse-slow" />
