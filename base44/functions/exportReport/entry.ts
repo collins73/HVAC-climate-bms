@@ -2,27 +2,33 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 import { jsPDF } from 'npm:jspdf@4.0.0';
 
 Deno.serve(async (req) => {
-  const base44 = createClientFromRequest(req);
+  try {
+    const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+    
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-  const body = await req.json();
-  const { building_id, month, year } = body; // month: 1-12, year: e.g. 2026
+    const body = await req.json();
+    const { building_id, month, year } = body; // month: 1-12, year: e.g. 2026
 
-  // Date range
-  const startDate = new Date(year, month - 1, 1).toISOString();
-  const endDate = new Date(year, month, 0, 23, 59, 59).toISOString();
-  const monthLabel = new Date(year, month - 1, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
+    // Date range
+    const startDate = new Date(year, month - 1, 1).toISOString();
+    const endDate = new Date(year, month, 0, 23, 59, 59).toISOString();
+    const monthLabel = new Date(year, month - 1, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
 
-  // Fetch data in parallel
-  const [buildings, zones, readings, thermostatSettings] = await Promise.all([
-    building_id
-      ? base44.asServiceRole.entities.Building.filter({ id: building_id })
-      : base44.asServiceRole.entities.Building.list(),
-    building_id
-      ? base44.asServiceRole.entities.Zone.filter({ building_id })
-      : base44.asServiceRole.entities.Zone.list(),
-    base44.asServiceRole.entities.EnvironmentReading.list('-timestamp', 1000),
-    base44.asServiceRole.entities.ThermostatSetting.list(),
-  ]);
+    // Fetch data in parallel using user context
+    const [buildings, zones, readings, thermostatSettings] = await Promise.all([
+      building_id
+        ? base44.entities.Building.filter({ id: building_id })
+        : base44.entities.Building.list(),
+      building_id
+        ? base44.entities.Zone.filter({ building_id })
+        : base44.entities.Zone.list(),
+      base44.entities.EnvironmentReading.list('-timestamp', 1000),
+      base44.entities.ThermostatSetting.list(),
+    ]);
 
   // Filter readings to the selected month
   const monthReadings = readings.filter(r => {
@@ -249,12 +255,15 @@ Deno.serve(async (req) => {
     doc.text(`HVAC Control Platform · ${monthLabel} Report · Page ${i} of ${pageCount}`, pageW / 2, 290, { align: 'center' });
   }
 
-  const pdfBytes = doc.output('arraybuffer');
-  return new Response(pdfBytes, {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename=hvac-report-${year}-${String(month).padStart(2, '0')}.pdf`,
-    },
-  });
+    const pdfBytes = doc.output('arraybuffer');
+    return new Response(pdfBytes, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename=hvac-report-${year}-${String(month).padStart(2, '0')}.pdf`,
+      },
+    });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
 });
