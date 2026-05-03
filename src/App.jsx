@@ -15,6 +15,7 @@ import BuildingDetail from '@/pages/BuildingDetail';
 import Zones from '@/pages/Zones';
 import ZoneControl from '@/pages/ZoneControl';
 import Alerts from '@/pages/Alerts';
+import ImportBlueprint from '@/pages/ImportBlueprint';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -40,18 +41,20 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       {/* Public pages (no sidebar layout) */}
-      <Route path="/" element={<Landing />} />
+      <Route path="/landing" element={<Landing />} />
       <Route path="/home" element={<Home />} />
       <Route path="/demo" element={<Demo />} />
 
       {/* App pages (with sidebar/bottom nav layout) */}
       <Route element={<Layout />}>
+        <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/buildings" element={<Buildings />} />
         <Route path="/buildings/:id" element={<BuildingDetail />} />
         <Route path="/zones" element={<Zones />} />
         <Route path="/zones/:id" element={<ZoneControl />} />
         <Route path="/alerts" element={<Alerts />} />
+        <Route path="/import" element={<ImportBlueprint />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />

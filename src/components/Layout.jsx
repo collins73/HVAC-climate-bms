@@ -1,13 +1,13 @@
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Building2, LayoutDashboard, Layers, AlertTriangle, Activity, ChevronRight, Home } from 'lucide-react';
+import { Building2, LayoutDashboard, Layers, AlertTriangle, Activity, ChevronRight, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { path: '/home', label: 'Home', icon: Home },
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/buildings', label: 'Buildings', icon: Building2 },
   { path: '/zones', label: 'Zones', icon: Layers },
   { path: '/alerts', label: 'Alerts', icon: AlertTriangle },
+  { path: '/import', label: 'Import Blueprint', icon: Upload },
 ];
 
 export default function Layout() {
@@ -24,13 +24,13 @@ export default function Layout() {
       <aside className="hidden md:flex w-64 flex-shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
         {/* Logo */}
         <div className="p-5 border-b border-sidebar-border">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/dashboard" className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
               <Activity className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <div className="text-sm font-bold text-foreground tracking-tight">HVAC Control</div>
-              <div className="text-xs text-muted-foreground">Environmental System</div>
+              <div className="text-xs font-bold text-primary tracking-tight uppercase">EMS AI Technologies</div>
+              <div className="text-xs text-muted-foreground font-medium">Omni Climate Flow</div>
             </div>
           </Link>
         </div>
@@ -57,7 +57,7 @@ export default function Layout() {
 
         {/* Footer */}
         <div className="p-4 border-t border-sidebar-border">
-          <div className="text-xs text-muted-foreground text-center">v1.0 · BMS Platform</div>
+          <div className="text-xs text-muted-foreground text-center">v2.0 · Omni Climate Flow</div>
         </div>
       </aside>
 
@@ -65,11 +65,14 @@ export default function Layout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile top bar */}
         <header className="md:hidden flex items-center justify-between px-4 h-14 bg-sidebar border-b border-sidebar-border flex-shrink-0">
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/dashboard" className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
               <Activity className="w-3.5 h-3.5 text-primary" />
             </div>
-            <span className="text-sm font-bold text-foreground">HVAC Control</span>
+            <div>
+              <div className="text-xs font-bold text-primary leading-none">EMS AI Technologies</div>
+              <div className="text-xs text-muted-foreground leading-none mt-0.5">Omni Climate Flow</div>
+            </div>
           </Link>
           <div className="flex items-center gap-1.5 text-xs text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-1">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-slow" />
