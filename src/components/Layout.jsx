@@ -1,5 +1,5 @@
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Building2, LayoutDashboard, Layers, AlertTriangle, Activity, ChevronRight, Upload, FolderOpen, Cpu, Users, Lock } from 'lucide-react';
+import { Building2, LayoutDashboard, Layers, AlertTriangle, Activity, ChevronRight, Upload, FolderOpen, Cpu, Users, Lock, Code2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -12,6 +12,7 @@ const navItems = [
   { path: '/leads', label: 'Pipeline', icon: Users },
   { path: '/ai-design', label: 'AI Design', icon: Cpu },
   { path: '/api', label: 'API Keys', icon: Lock },
+  { path: '/api-docs', label: 'API Docs', icon: Code2 },
 ];
 
 export default function Layout() {

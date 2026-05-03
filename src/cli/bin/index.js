@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /* eslint-env node */
+/* eslint-disable no-undef */
 
 const { program } = require('commander');
 const path = require('path');

@@ -24,6 +24,7 @@ import AIDesign from '@/pages/AIDesign';
 import Leads from '@/pages/Leads';
 import TrialSignup from '@/pages/TrialSignup';
 import APIManagement from '@/pages/APIManagement';
+import APIDocumentation from '@/pages/APIDocumentation';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -72,6 +73,7 @@ const AuthenticatedApp = () => {
         <Route path="/ai-design" element={<AIDesign />} />
         <Route path="/leads" element={<Leads />} />
         <Route path="/api" element={<APIManagement />} />
+        <Route path="/api-docs" element={<APIDocumentation />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
