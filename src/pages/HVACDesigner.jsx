@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Cpu, Building2, Home, Zap, TrendingDown, ChevronRight, BarChart3, Wrench } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import PageHeader from '@/components/shared/PageHeader';
 import EquipmentSelectorPanel from '@/components/hvac/EquipmentSelectorPanel';
 import EnergyPredictorPanel from '@/components/hvac/EnergyPredictorPanel';
@@ -121,11 +122,13 @@ export default function HVACDesigner() {
       </div>
 
       {/* Panels */}
-      {activePanel === 'equipment' && <EquipmentSelectorPanel onClose={() => setActivePanel(null)} />}
-      {activePanel === 'predict' && <EnergyPredictorPanel onClose={() => setActivePanel(null)} />}
-      {activePanel === 'commercial' && <CommercialDesignPanel onClose={() => setActivePanel(null)} />}
-      {activePanel === 'residential' && <ResidentialDesignPanel onClose={() => setActivePanel(null)} />}
-      {activePanel === 'load_calc' && <LoadCalcPanel onClose={() => setActivePanel(null)} />}
+      <AnimatePresence>
+        {activePanel === 'equipment' && <EquipmentSelectorPanel key="equipment" onClose={() => setActivePanel(null)} />}
+        {activePanel === 'predict' && <EnergyPredictorPanel key="predict" onClose={() => setActivePanel(null)} />}
+        {activePanel === 'commercial' && <CommercialDesignPanel key="commercial" onClose={() => setActivePanel(null)} />}
+        {activePanel === 'residential' && <ResidentialDesignPanel key="residential" onClose={() => setActivePanel(null)} />}
+        {activePanel === 'load_calc' && <LoadCalcPanel key="load_calc" onClose={() => setActivePanel(null)} />}
+      </AnimatePresence>
     </div>
   );
 }

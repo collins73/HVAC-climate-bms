@@ -1,5 +1,6 @@
-import { X, Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export function exportText(title, content) {
@@ -20,8 +21,14 @@ export default function HVACPanelShell({ title, icon: Icon, accentColor = 'cyan'
     emerald: 'border-emerald-500/30 text-emerald-400',
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-slate-950">
+  return createPortal(
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 24 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="fixed inset-0 z-50 flex flex-col bg-slate-950"
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -41,7 +48,8 @@ export default function HVACPanelShell({ title, icon: Icon, accentColor = 'cyan'
       <div className="flex-1 overflow-y-auto">
         {children}
       </div>
-    </div>
+    </motion.div>,
+    document.body
   );
 }
 
