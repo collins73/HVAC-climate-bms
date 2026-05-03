@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Upload, FileImage, Loader2, Building2, Trash2, Download, Eye, Plus, X, Search, Filter, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,17 @@ export default function Blueprints() {
   const [buildingFilter, setBuildingFilter] = useState('all');
   const [showUpload, setShowUpload] = useState(false);
   const [previewBp, setPreviewBp] = useState(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [dropFile, setDropFile] = useState(null);
+
+  const handlePageDragOver = useCallback((e) => { e.preventDefault(); setDragOver(true); }, []);
+  const handlePageDragLeave = useCallback((e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDragOver(false); }, []);
+  const handlePageDrop = useCallback((e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) { setDropFile(file); setShowUpload(true); }
+  }, []);
 
   useEffect(() => {
     Promise.all([
@@ -32,7 +43,10 @@ export default function Blueprints() {
   const handleSaved = (bp) => {
     setBlueprints(prev => [bp, ...prev]);
     setShowUpload(false);
+    setDropFile(null);
   };
+
+  const handleCloseUpload = () => { setShowUpload(false); setDropFile(null); };
 
   const handleDelete = async (bp) => {
     await base44.entities.Blueprint.delete(bp.id);
@@ -49,7 +63,19 @@ export default function Blueprints() {
   const isImage = (url) => url && /\.(png|jpg|jpeg|gif|webp|svg)(\?|$)/i.test(url);
 
   return (
-    <div className="p-6 space-y-6 max-w-6xl mx-auto">
+    <div
+      className="p-6 space-y-6 max-w-6xl mx-auto relative"
+      onDragOver={handlePageDragOver}
+      onDragLeave={handlePageDragLeave}
+      onDrop={handlePageDrop}
+    >
+      {/* Full-page drag overlay */}
+      {dragOver && (
+        <div className="fixed inset-0 z-50 bg-primary/10 border-4 border-dashed border-primary/60 flex flex-col items-center justify-center gap-4 pointer-events-none">
+          <Upload className="w-16 h-16 text-primary animate-bounce" />
+          <p className="text-xl font-semibold text-primary">Drop to upload blueprint</p>
+        </div>
+      )}
       <PageHeader
         title="Blueprint Library"
         subtitle="Store and manage floor plans and blueprints for all buildings"
@@ -107,12 +133,12 @@ export default function Blueprints() {
       )}
 
       {/* Upload modal */}
-      <Dialog open={showUpload} onOpenChange={setShowUpload}>
+      <Dialog open={showUpload} onOpenChange={handleCloseUpload}>
         <DialogContent className="bg-popover border-border max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-foreground">Upload Blueprint</DialogTitle>
           </DialogHeader>
-          <UploadForm buildings={buildings} onSaved={handleSaved} onCancel={() => setShowUpload(false)} />
+          <UploadForm buildings={buildings} onSaved={handleSaved} onCancel={handleCloseUpload} initialFile={dropFile} />
         </DialogContent>
       </Dialog>
 
@@ -189,7 +215,7 @@ function BlueprintCard({ bp, buildingName, isImage, onPreview, onDelete }) {
   );
 }
 
-function UploadForm({ buildings, onSaved, onCancel }) {
+function UploadForm({ buildings, onSaved, onCancel, initialFile }) {
   const [form, setForm] = useState({ name: '', building_id: '', floor: 1, description: '' });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -198,6 +224,10 @@ function UploadForm({ buildings, onSaved, onCancel }) {
   const fileRef = useRef(null);
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  useEffect(() => {
+    if (initialFile) handleFile(initialFile);
+  }, [initialFile]);
 
   const handleFile = async (file) => {
     if (!file) return;
