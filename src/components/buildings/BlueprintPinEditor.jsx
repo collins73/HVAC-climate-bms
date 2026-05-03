@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { X, Plus, Thermometer, Droplets, Wind, Gauge, Zap, HelpCircle, Trash2, ChevronLeft, ChevronRight, Download, MapPin, Users, Flame } from 'lucide-react';
+import { X, Plus, Thermometer, Droplets, Wind, Gauge, Zap, HelpCircle, Trash2, ChevronLeft, ChevronRight, Download, MapPin, Users, Flame, Activity } from 'lucide-react';
 import OccupancyOverlay from './OccupancyOverlay';
 import HeatmapOverlay from './HeatmapOverlay';
+import SensorHealthOverlay from './SensorHealthOverlay';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -108,6 +109,8 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
   const [addingPin, setAddingPin] = useState(false);
   const [occupancyMode, setOccupancyMode] = useState(false);
   const [heatmapMode, setHeatmapMode] = useState(false);
+  const [sensorHealthMode, setSensorHealthMode] = useState(false);
+  const [latestReadingsByZone, setLatestReadingsByZone] = useState({});
   const imgRef = useRef(null);
 
   const blueprint = blueprints?.[bpIndex];
@@ -119,7 +122,22 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
     setPins(all);
   }, [building?.id, bpIndex]);
 
+  const loadReadings = useCallback(async () => {
+    if (!building?.id) return;
+    const readings = await base44.entities.EnvironmentReading.filter({ building_id: building.id });
+    // Keep only the latest reading per zone
+    const byZone = {};
+    readings.forEach(r => {
+      if (!r.zone_id) return;
+      if (!byZone[r.zone_id] || r.timestamp > byZone[r.zone_id].timestamp) {
+        byZone[r.zone_id] = r;
+      }
+    });
+    setLatestReadingsByZone(byZone);
+  }, [building?.id]);
+
   useEffect(() => { loadPins(); setSelectedPin(null); }, [loadPins]);
+  useEffect(() => { if (sensorHealthMode) loadReadings(); }, [sensorHealthMode, loadReadings]);
 
   const handleImageClick = async (e) => {
     if (!addingPin) return;
@@ -198,7 +216,7 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
           )}
           <Button
             size="sm"
-            onClick={() => { setHeatmapMode(v => !v); setOccupancyMode(false); setAddingPin(false); setSelectedPin(null); }}
+            onClick={() => { setHeatmapMode(v => !v); setOccupancyMode(false); setSensorHealthMode(false); setAddingPin(false); setSelectedPin(null); }}
             className={cn("gap-1.5 h-7 text-xs transition-all", heatmapMode
               ? 'bg-red-500/20 border border-red-500/40 text-red-400 hover:bg-red-500/30'
               : 'bg-card border border-border text-muted-foreground hover:text-foreground'
@@ -208,7 +226,7 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
           </Button>
           <Button
             size="sm"
-            onClick={() => { setOccupancyMode(v => !v); setHeatmapMode(false); setAddingPin(false); setSelectedPin(null); }}
+            onClick={() => { setOccupancyMode(v => !v); setHeatmapMode(false); setSensorHealthMode(false); setAddingPin(false); setSelectedPin(null); }}
             className={cn("gap-1.5 h-7 text-xs transition-all", occupancyMode
               ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/30'
               : 'bg-card border border-border text-muted-foreground hover:text-foreground'
@@ -216,7 +234,17 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
           >
             <Users className="w-3 h-3" /> {occupancyMode ? 'Occupancy ON' : 'Occupancy'}
           </Button>
-          {!occupancyMode && !heatmapMode && (
+          <Button
+            size="sm"
+            onClick={() => { setSensorHealthMode(v => !v); setOccupancyMode(false); setHeatmapMode(false); setAddingPin(false); setSelectedPin(null); }}
+            className={cn("gap-1.5 h-7 text-xs transition-all", sensorHealthMode
+              ? 'bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/30'
+              : 'bg-card border border-border text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <Activity className="w-3 h-3" /> {sensorHealthMode ? 'Sensor Health ON' : 'Sensor Health'}
+          </Button>
+          {!occupancyMode && !heatmapMode && !sensorHealthMode && (
             <Button
               size="sm"
               onClick={() => { setAddingPin(v => !v); setSelectedPin(null); }}
@@ -244,13 +272,13 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
         {isImage(blueprint?.url) ? (
           <div
             ref={imgRef}
-            className={cn("relative select-none", !occupancyMode && addingPin ? 'cursor-crosshair' : 'cursor-default')}
-            onClick={!occupancyMode ? handleImageClick : undefined}
+            className={cn("relative select-none", !occupancyMode && !sensorHealthMode && addingPin ? 'cursor-crosshair' : 'cursor-default')}
+            onClick={!occupancyMode && !sensorHealthMode ? handleImageClick : undefined}
           >
             <img src={blueprint.url} alt={blueprint.name} className="w-full h-auto block" draggable={false} />
 
-            {/* Sensor pins — hidden in occupancy mode */}
-            {!occupancyMode && (
+            {/* Sensor pins — hidden in overlay modes */}
+            {!occupancyMode && !sensorHealthMode && (
               <>
                 <AnimatePresence>
                   {pins.map(pin => (
@@ -291,6 +319,11 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
             {/* Heatmap overlay */}
             {heatmapMode && (
               <HeatmapOverlay zones={zones} pins={pins} imgRef={imgRef} />
+            )}
+
+            {/* Sensor health overlay */}
+            {sensorHealthMode && (
+              <SensorHealthOverlay pins={pins} zones={zones} latestReadingsByZone={latestReadingsByZone} />
             )}
           </div>
         ) : (
