@@ -17,6 +17,7 @@ const navItems = [
   { path: '/python-sdk', label: 'Python SDK', icon: Code2 },
   { path: '/integrations', label: 'Integrations', icon: Zap },
   { path: '/monitor', label: 'Monitor', icon: Wifi },
+  { path: '/github-sync', label: 'GitHub Sync', icon: Code2 },
 ];
 
 export default function Layout() {

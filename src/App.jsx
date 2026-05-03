@@ -29,6 +29,7 @@ import APIWebhooks from '@/pages/APIWebhooks';
 import PythonSDK from '@/pages/PythonSDK';
 import Integrations from '@/pages/Integrations';
 import FacilitiesMonitor from '@/pages/FacilitiesMonitor';
+import GitHubSync from '@/pages/GitHubSync';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -82,6 +83,7 @@ const AuthenticatedApp = () => {
         <Route path="/python-sdk" element={<PythonSDK />} />
         <Route path="/integrations" element={<Integrations />} />
         <Route path="/monitor" element={<FacilitiesMonitor />} />
+        <Route path="/github-sync" element={<GitHubSync />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
