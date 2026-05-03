@@ -23,6 +23,7 @@ import EnergyPredictor from '@/pages/EnergyPredictor';
 import AIDesign from '@/pages/AIDesign';
 import Leads from '@/pages/Leads';
 import TrialSignup from '@/pages/TrialSignup';
+import APIManagement from '@/pages/APIManagement';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -70,6 +71,7 @@ const AuthenticatedApp = () => {
         <Route path="/hvac/energy" element={<EnergyPredictor />} />
         <Route path="/ai-design" element={<AIDesign />} />
         <Route path="/leads" element={<Leads />} />
+        <Route path="/api" element={<APIManagement />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
