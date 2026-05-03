@@ -48,6 +48,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       {/* Public pages (no sidebar layout) */}
+      <Route path="/" element={<Landing />} />
       <Route path="/trial-signup" element={<TrialSignup />} />
       <Route path="/landing" element={<Landing />} />
       <Route path="/home" element={<Home />} />
@@ -55,7 +56,7 @@ const AuthenticatedApp = () => {
 
       {/* App pages (with sidebar/bottom nav layout) */}
       <Route element={<Layout />}>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/buildings" element={<Buildings />} />
         <Route path="/buildings/:id" element={<BuildingDetail />} />
