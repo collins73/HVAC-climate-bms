@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { AlertTriangle, Plus, Search, Check, CheckCheck, ExternalLink, Filter } from 'lucide-react';
+import { AlertTriangle, Plus, Search, Check, CheckCheck, ExternalLink, Filter, Sparkles, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -28,6 +28,32 @@ export default function Alerts() {
   const [search, setSearch] = useState('');
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [aiRecs, setAiRecs] = useState({});    // { alertId: { loading, text } }
+  const [expanded, setExpanded] = useState({}); // { alertId: bool }
+
+  const getAIRecommendation = async (alert) => {
+    const building = buildings.find(b => b.id === alert.building_id);
+    const zone = zones.find(z => z.id === alert.zone_id);
+    setAiRecs(r => ({ ...r, [alert.id]: { loading: true, text: null } }));
+    setExpanded(e => ({ ...e, [alert.id]: true }));
+    const result = await base44.integrations.Core.InvokeLLM({
+      prompt: `You are an expert HVAC engineer. An alert has been triggered in a building management system. Provide a concise, actionable diagnosis and step-by-step fix recommendation.
+
+Alert Type: ${alert.alert_type}
+Severity: ${alert.severity}
+Message: ${alert.message || 'No message provided'}
+Building: ${building?.name || 'Unknown'}
+Zone: ${zone?.name || 'Unknown'} (Type: ${zone?.zone_type || 'Unknown'})
+
+Provide:
+1. Likely root cause (1-2 sentences)
+2. Immediate action steps (numbered list, max 4 steps)
+3. Preventive measures (1-2 sentences)
+
+Be specific to the alert type and zone. Keep it concise and technical.`,
+    });
+    setAiRecs(r => ({ ...r, [alert.id]: { loading: false, text: result } }));
+  };
 
   const load = async () => {
     const [a, b, z] = await Promise.all([
@@ -142,7 +168,8 @@ export default function Alerts() {
             const building = buildings.find(b => b.id === a.building_id);
             const zone = zones.find(z => z.id === a.zone_id);
             return (
-              <div key={a.id} className={cn(
+              <div key={a.id}>
+              <div className={cn(
                 "bg-card border rounded-xl p-4 flex items-start gap-4 transition-all",
                 a.severity === 'Critical' ? 'border-red-500/30' : a.severity === 'High' ? 'border-orange-500/20' : 'border-border'
               )}>
@@ -175,6 +202,14 @@ export default function Alerts() {
                   </div>
                 </div>
                 <div className="flex gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => aiRecs[a.id] ? setExpanded(e => ({ ...e, [a.id]: !e[a.id] })) : getAIRecommendation(a)}
+                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    {aiRecs[a.id]?.loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                    AI Fix
+                    {aiRecs[a.id] && !aiRecs[a.id]?.loading && (expanded[a.id] ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                  </button>
                   {a.status === 'Open' && (
                     <button
                       onClick={() => acknowledgeAlert(a)}
@@ -192,6 +227,24 @@ export default function Alerts() {
                     </button>
                   )}
                 </div>
+              </div>
+              {/* AI Recommendation Panel */}
+              {expanded[a.id] && aiRecs[a.id] && (
+                <div className="mt-3 mx-0 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                  {aiRecs[a.id].loading ? (
+                    <div className="flex items-center gap-2 text-xs text-primary">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Analyzing alert and generating fix recommendations…
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-primary mb-2">
+                        <Sparkles className="w-3.5 h-3.5" /> AI Recommendation
+                      </div>
+                      <p className="text-xs text-foreground/80 whitespace-pre-wrap leading-relaxed">{aiRecs[a.id].text}</p>
+                    </div>
+                  )}
+                </div>
+              )}
               </div>
             );
           })}
