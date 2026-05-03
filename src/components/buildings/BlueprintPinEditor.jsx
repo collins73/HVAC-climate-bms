@@ -118,8 +118,8 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
 
   const loadPins = useCallback(async () => {
     if (!building?.id) return;
-    const all = await base44.entities.SensorPin.filter({ building_id: building.id, blueprint_index: bpIndex });
-    setPins(all);
+    const all = await base44.entities.SensorPin.filter({ building_id: building.id });
+    setPins(all.filter(p => (p.blueprint_index ?? 0) === bpIndex));
   }, [building?.id, bpIndex]);
 
   const loadReadings = useCallback(async () => {
