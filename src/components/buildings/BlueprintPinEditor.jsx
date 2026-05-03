@@ -137,7 +137,8 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
   }, [building?.id]);
 
   useEffect(() => { loadPins(); setSelectedPin(null); }, [loadPins]);
-  useEffect(() => { if (sensorHealthMode) loadReadings(); }, [sensorHealthMode, loadReadings]);
+  useEffect(() => { loadReadings(); }, [loadReadings]);
+  useEffect(() => { if (sensorHealthMode) loadReadings(); }, [sensorHealthMode]);
 
   const handleImageClick = async (e) => {
     if (!addingPin) return;
@@ -323,7 +324,9 @@ export default function BlueprintPinEditor({ building, zones, blueprints }) {
 
             {/* Sensor health overlay */}
             {sensorHealthMode && (
-              <SensorHealthOverlay pins={pins} zones={zones} latestReadingsByZone={latestReadingsByZone} />
+              <div className="absolute inset-0">
+                <SensorHealthOverlay pins={pins} zones={zones} latestReadingsByZone={latestReadingsByZone} />
+              </div>
             )}
           </div>
         ) : (
