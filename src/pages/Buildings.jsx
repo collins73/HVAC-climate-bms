@@ -16,15 +16,28 @@ export default function Buildings() {
   const [modal, setModal] = useState(false);
   const [editing, setEditing] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const load = async () => {
-    const [b, z, a] = await Promise.all([
-      base44.entities.Building.list(),
-      base44.entities.Zone.list(),
-      base44.entities.Alert.filter({ status: 'Open' }),
-    ]);
-    setBuildings(b); setZones(z); setAlerts(a);
-    setLoading(false);
+    try {
+      setError(null);
+      const [b, z, a] = await Promise.all([
+        base44.entities.Building.list(),
+        base44.entities.Zone.list(),
+        base44.entities.Alert.filter({ status: 'Open' }),
+      ]);
+      setBuildings(b);
+      setZones(z);
+      setAlerts(a);
+    } catch (err) {
+      console.error('Failed to load buildings:', err);
+      setError('Failed to load buildings. Please try again.');
+      setBuildings([]);
+      setZones([]);
+      setAlerts([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, []);
@@ -37,8 +50,13 @@ export default function Buildings() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this building?')) return;
-    await base44.entities.Building.delete(id);
-    load();
+    try {
+      await base44.entities.Building.delete(id);
+      load();
+    } catch (err) {
+      console.error('Failed to delete building:', err);
+      setError('Failed to delete building. Please try again.');
+    }
   };
 
   return (
@@ -59,10 +77,23 @@ export default function Buildings() {
         <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search buildings…" className="pl-9 bg-card border-border text-foreground" />
       </div>
 
+      {/* Error State */}
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-red-400 font-medium">{error}</p>
+            <p className="text-red-400/70 text-sm mt-1">Please check your connection and try again.</p>
+          </div>
+          <Button onClick={load} className="bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30">
+            Retry
+          </Button>
+        </div>
+      )}
+
       {/* Grid */}
       {loading ? (
         <div className="text-muted-foreground text-center py-16">Loading…</div>
-      ) : filtered.length === 0 ? (
+      ) : error ? null : filtered.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
           <Building2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
           <p>{search ? 'No buildings match your search' : 'No buildings added yet'}</p>
