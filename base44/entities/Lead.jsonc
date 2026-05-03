@@ -1,0 +1,98 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "first_name": {
+      "type": "string"
+    },
+    "last_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "company": {
+      "type": "string"
+    },
+    "company_type": {
+      "type": "string",
+      "enum": [
+        "Mechanical Contractor",
+        "Building Owner",
+        "Property Manager",
+        "Engineering Firm",
+        "Energy Services",
+        "Government",
+        "Healthcare",
+        "Education",
+        "Other"
+      ],
+      "default": "Other"
+    },
+    "city": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "New",
+        "Contacted",
+        "Demo Scheduled",
+        "Trial Active",
+        "Converted",
+        "Churned"
+      ],
+      "default": "New"
+    },
+    "interest_level": {
+      "type": "string",
+      "enum": [
+        "Hot",
+        "Warm",
+        "Cold"
+      ],
+      "default": "Warm"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "Website",
+        "Referral",
+        "Event",
+        "Cold Outreach",
+        "Demo Request",
+        "Other"
+      ],
+      "default": "Other"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "last_contacted_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "trial_start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "trial_end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "assigned_to": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "first_name",
+    "last_name",
+    "email"
+  ]
+}

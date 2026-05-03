@@ -21,6 +21,8 @@ import HVACDesigner from '@/pages/HVACDesigner';
 import EquipmentSelector from '@/pages/EquipmentSelector';
 import EnergyPredictor from '@/pages/EnergyPredictor';
 import AIDesign from '@/pages/AIDesign';
+import Leads from '@/pages/Leads';
+import TrialSignup from '@/pages/TrialSignup';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -46,6 +48,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       {/* Public pages (no sidebar layout) */}
+      <Route path="/trial-signup" element={<TrialSignup />} />
       <Route path="/landing" element={<Landing />} />
       <Route path="/home" element={<Home />} />
       <Route path="/demo" element={<Demo />} />
@@ -65,6 +68,7 @@ const AuthenticatedApp = () => {
         <Route path="/hvac/equipment" element={<EquipmentSelector />} />
         <Route path="/hvac/energy" element={<EnergyPredictor />} />
         <Route path="/ai-design" element={<AIDesign />} />
+        <Route path="/leads" element={<Leads />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
